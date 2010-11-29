@@ -13,7 +13,8 @@
             </intent-filter>
         </activity>
 
-    </application>
+    <activity android:name=".Note"></activity>
+</application>
 
 
 </manifest> 

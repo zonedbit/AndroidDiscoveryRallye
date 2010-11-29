@@ -1,6 +1,7 @@
 package android.discoveryRalley;
 
 import android.app.TabActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TabHost;
 
@@ -27,7 +28,7 @@ public class DiscoveryRalley extends TabActivity {
         // Setup tab three
         mTabHost.addTab(mTabHost.newTabSpec("tabNote")
         		.setIndicator(getString(R.string.nameTabNote))
-        		.setContent(R.id.textview3));
+        		.setContent(new Intent(this, Note.class) ));
         
         mTabHost.setCurrentTab(0);
     }

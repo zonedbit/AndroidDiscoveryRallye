@@ -5,4 +5,7 @@
 	<string name="nameTabMap">Karte</string>
 	<string name="nameTabPOI">POIs</string>
 	<string name="nameTabNote">Notizen</string>
+	
+	<string name="noteHeaderTxtView">Deine Notizen</string>
+	<string name="noteSaveBtn">Speichern</string>
 </resources>
