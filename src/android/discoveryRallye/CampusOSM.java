@@ -49,7 +49,7 @@ public class CampusOSM extends Activity {
         
         addCampusOverlay();
         addMyLocationOverlay();
-        //addRouteOverlay();
+        addRouteOverlay();
         setPreferences();
         setInitialView();
         createLayout();
@@ -78,13 +78,16 @@ public class CampusOSM extends Activity {
     	super.onResume();
     }
 
-
-
 	private void addRouteOverlay() 
     {
+		POI myLocation = new POI(51.494995, 7.419649, "FB4");
+		POI destination = new POI(51.515872, 7.466852, "zuhause" );
+		
+		ArrayList<android.discoveryRallye.GeoPoint> geoPoints = new JSONRequest().createRequest(myLocation, destination);
+		
+		new RouteOverlay(geoPoints);
+		
 	}
-
-
 
 	private void addCampusOverlay() 
     {
