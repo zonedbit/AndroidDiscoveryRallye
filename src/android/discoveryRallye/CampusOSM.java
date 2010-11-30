@@ -58,6 +58,9 @@ public class CampusOSM extends Activity {
     
     private void addMyLocationOverlay() {
 	        this.myLocationOverlay = new MyLocationOverlay(this.getBaseContext(), openStreetMapView, mResourceProxy);
+	        //Batterie sparen
+	        myLocationOverlay.setLocationUpdateMinDistance(100);
+	        myLocationOverlay.setLocationUpdateMinTime(4000);
 	        this.openStreetMapView.getOverlays().add(this.myLocationOverlay);
 	}
     
