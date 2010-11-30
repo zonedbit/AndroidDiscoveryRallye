@@ -3,8 +3,10 @@ package android.discoveryRallye;
 import java.util.ArrayList;
 
 import org.andnav.osm.ResourceProxy;
+import org.andnav.osm.views.overlay.OpenStreetMapViewSimpleLocationOverlay;
 import org.andnav.osm.util.GeoPoint;
 import org.andnav.osm.views.OpenStreetMapView;
+import org.andnav.osm.views.overlay.MyLocationOverlay;
 import org.andnav.osm.views.overlay.OpenStreetMapViewItemizedOverlay;
 import org.andnav.osm.views.overlay.OpenStreetMapViewItemizedOverlay.OnItemGestureListener;
 import org.andnav.osm.views.overlay.OpenStreetMapViewItemizedOverlayWithFocus;
@@ -23,7 +25,7 @@ import android.widget.Toast;
 public class CampusOSM extends Activity {
 
 	private OpenStreetMapView openStreetMapView;
-	private OpenStreetMapViewItemizedOverlayWithFocus<OpenStreetMapViewOverlayItem> myLocationOverlay;
+	private OpenStreetMapViewItemizedOverlayWithFocus<OpenStreetMapViewOverlayItem> itemizedOverlay;
 	private ResourceProxy mResourceProxy;
 	
 	//Emil-Figge Straße 42
@@ -32,6 +34,7 @@ public class CampusOSM extends Activity {
 	
 	private RelativeLayout relativeLayout;
 	private ArrayList<OpenStreetMapViewOverlayItem> items = new ArrayList<OpenStreetMapViewOverlayItem>();
+	private MyLocationOverlay myLocationOverlay;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,7 @@ public class CampusOSM extends Activity {
         items.add(openStreetMapViewOverlayItem);
         
         addCampusOverlay();
+        addMyLocationOverlay();
         //addRouteOverlay();
         setPreferences();
         setInitialView();
@@ -52,8 +56,28 @@ public class CampusOSM extends Activity {
     }
     
     
+    private void addMyLocationOverlay() {
+	        this.myLocationOverlay = new MyLocationOverlay(this.getBaseContext(), openStreetMapView, mResourceProxy);
+	        this.openStreetMapView.getOverlays().add(this.myLocationOverlay);
+	}
     
-    private void addRouteOverlay() 
+    @Override
+    protected void onPause() {
+    	//Batterie sparen
+    	myLocationOverlay.disableMyLocation();
+    	
+    	super.onPause();
+    }
+    
+    @Override
+    protected void onResume() {
+    	this.myLocationOverlay.enableMyLocation();
+    	super.onResume();
+    }
+
+
+
+	private void addRouteOverlay() 
     {
 	}
 
@@ -61,11 +85,11 @@ public class CampusOSM extends Activity {
 
 	private void addCampusOverlay() 
     {
-	        this.myLocationOverlay = new OpenStreetMapViewItemizedOverlayWithFocus<OpenStreetMapViewOverlayItem>(this, items, new ItemGestureListener<OpenStreetMapViewOverlayItem>(), mResourceProxy);
-	        this.myLocationOverlay.setFocusItemsOnTap(true);
-	        this.myLocationOverlay.setFocusedItem(0); //TODO
+	        this.itemizedOverlay = new OpenStreetMapViewItemizedOverlayWithFocus<OpenStreetMapViewOverlayItem>(this, items, new ItemGestureListener<OpenStreetMapViewOverlayItem>(), mResourceProxy);
+	        this.itemizedOverlay.setFocusItemsOnTap(true);
+	        this.itemizedOverlay.setFocusedItem(0); //TODO
 	        
-	        this.openStreetMapView.getOverlays().add(this.myLocationOverlay);
+	        this.openStreetMapView.getOverlays().add(this.itemizedOverlay);
 	}
     
     public void addItem(OpenStreetMapViewOverlayItem item)
@@ -105,6 +129,7 @@ public class CampusOSM extends Activity {
         GeoPoint geoPoint = new GeoPoint(LAT, LON);
     	
     	this.openStreetMapView.getController().setZoom(16);
+    	//Alternativ könnte man auch auf die Postion des Benutzer zoomen -> Wäre das gewollt?
     	this.openStreetMapView.getController().setCenter(geoPoint);
     	this.openStreetMapView.invalidate();
     }
