@@ -9,6 +9,7 @@ import org.andnav.osm.views.overlay.OpenStreetMapViewOverlay;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Path;
@@ -29,23 +30,32 @@ public class RouteOverlay extends OpenStreetMapViewOverlay {
 	{
 		OpenStreetMapViewProjection projection = openStreetMapView.getProjection();
 	    Path p = new Path();
-	    for (int i = 0; i < geoPoints.size(); i++) {
-	    if (i == geoPoints.size() - 1) 
+	    
+	    //ersten Punkt setzen
+	    Point startingPoint = new Point();
+	    
+	    GeoPoint geoPoint = geoPoints.get(0);
+	    
+	    projection.toMapPixels(geoPoint, startingPoint);
+	    p.moveTo(startingPoint.x, startingPoint.y);
+	    
+	    if(!geoPoints.isEmpty())
 	    {
-	        break;
+	    	for (int i = 1; i < geoPoints.size() - 1; i++) 
+	    	{
+	    		Point to = new Point();
+	    		projection.toMapPixels(geoPoints.get(i), to);
+	    		p.lineTo(to.x, to.y);
+	    		p.moveTo(to.x, to.y);
+	    	}
 	    }
-	    Point from = new Point();
-	    Point to = new Point();
-	    projection.toMapPixels(geoPoints.get(i), from);
-	    projection.toMapPixels(geoPoints.get(i + 1), to);
-	    p.moveTo(from.x, from.y);
-	    p.lineTo(to.x, to.y);
-	    }
-	    Paint mPaint = new Paint();
-	    mPaint.setStyle(Style.FILL);
-	    mPaint.setColor(0x00000000);
-	    mPaint.setAntiAlias(true);
-	    canvas.drawPath(p, mPaint);
+	    
+	    Paint polygonPaint = new Paint();
+	    polygonPaint.setStrokeWidth(5); 
+	    polygonPaint.setColor(Color.BLACK);
+	    polygonPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+	    polygonPaint.setAntiAlias(true);
+	    canvas.drawPath(p, polygonPaint);
 	}
 
 	@Override

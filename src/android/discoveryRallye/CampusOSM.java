@@ -48,8 +48,8 @@ public class CampusOSM extends Activity {
         items.add(openStreetMapViewOverlayItem);
         
         addCampusOverlay();
-        addMyLocationOverlay();
         addRouteOverlay();
+        addMyLocationOverlay();
         setPreferences();
         setInitialView();
         createLayout();
