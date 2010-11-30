@@ -9,7 +9,7 @@
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.INTERNET" />
 	
-    <application android:icon="@drawable/icon" android:theme="@android:style/Theme.NoTitleBar" >
+    <application android:icon="@drawable/icon" android:theme="@android:style/Theme.NoTitleBar" android:debuggable="true" >
 	    <meta-data android:name="CLOUDMADE_KEY" android:value="715324b1a9524df89557cf4de174232d" />
     	<uses-sdk android:minSdkVersion="5" />
         <activity android:name=".DiscoveryRallye"
