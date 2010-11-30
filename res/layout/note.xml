@@ -1,23 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
-		<TextView 	android:text="@string/noteHeaderTxtView" 
-				  	android:id="@+id/noteHeaderTxtView"
-				  	android:textSize="18sp"
-					android:layout_width="wrap_content" 
+<ScrollView android:id="@+id/noteScrollView" 
+		    android:layout_width="fill_parent" 
+		    android:layout_height="fill_parent" 
+		    xmlns:android="http://schemas.android.com/apk/res/android"
+		    >
+	<LinearLayout   android:orientation="vertical"
+	    			android:layout_width="fill_parent"
+	    			android:layout_height="fill_parent">
+		
+		<TextView 	android:text="@string/noteHeaderTxtView"
+					android:id="@+id/noteHeaderTxtView"
+					android:textSize="18sp"
+					android:layout_width="wrap_content"
 					android:layout_height="wrap_content" />
-					
-        <EditText 	android:id="@+id/noteEditTxt"
-					android:layout_width="fill_parent" 
-					android:layout_height="300px" 
+	
+	      <EditText android:id="@+id/noteEditTxt"
+					android:layout_width="fill_parent"
+					android:layout_height="300px"
+					android:gravity="top"
 					android:singleLine="false"/>
-					
-		<Button		android:text="@string/noteSaveBtn" 
-					android:id="@+id/noteSaveBtn"
-					android:layout_width="fill_parent" 
-					android:layout_height="wrap_content"
-					android:onClick="saveNoteHandler" />
-</LinearLayout>
+	
+		<Button android:text="@string/noteSaveBtn"
+				android:id="@+id/noteSaveBtn"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:onClick="saveNoteHandler" />
+	</LinearLayout>
+</ScrollView>
