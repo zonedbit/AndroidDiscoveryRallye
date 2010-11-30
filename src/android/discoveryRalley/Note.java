@@ -10,6 +10,7 @@ import java.io.OutputStreamWriter;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;

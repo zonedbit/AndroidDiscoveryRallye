@@ -16,9 +16,12 @@
 	
 	      <EditText android:id="@+id/noteEditTxt"
 					android:layout_width="fill_parent"
-					android:layout_height="300px"
+					android:layout_height="fill_parent"
 					android:gravity="top"
-					android:singleLine="false"/>
+					android:lines="6"
+					android:singleLine="false"
+					android:inputType="text|textMultiLine"
+					/>
 	
 		<Button android:text="@string/noteSaveBtn"
 				android:id="@+id/noteSaveBtn"
