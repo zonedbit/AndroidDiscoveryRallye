@@ -83,9 +83,16 @@ public class CampusOSM extends Activity {
 		POI myLocation = new POI(51.494995, 7.419649, "FB4");
 		POI destination = new POI(51.515872, 7.466852, "zuhause" );
 		
-		ArrayList<android.discoveryRallye.GeoPoint> geoPoints = new JSONRequest().createRequest(myLocation, destination);
+		addItem(new GeoPoint(myLocation.getLat(), myLocation.getLon()), myLocation.getDescription());
+		addItem(new GeoPoint(destination.getLat(), destination.getLon()), destination.getDescription());
 		
-		new RouteOverlay(geoPoints);
+		//TODO: Das muss man unbedingt in einen ProgressBar/Thread stecken
+		ArrayList<GeoPoint> geoPoints = new JSONRequest().createRequest(myLocation, destination);
+		
+		RouteOverlay routeOverlay = new RouteOverlay(geoPoints, this);
+		
+		openStreetMapView.getOverlays().add(routeOverlay);
+		this.openStreetMapView.invalidate();
 		
 	}
 
@@ -98,16 +105,17 @@ public class CampusOSM extends Activity {
 	        this.openStreetMapView.getOverlays().add(this.itemizedOverlay);
 	}
     
-    public void addItem(OpenStreetMapViewOverlayItem item)
+    public void addItem(GeoPoint geoPoint, String description)
     {
-    	items.add(item);
+    	//TODO: Long- und Shortdescription benutzen?
+    	OpenStreetMapViewOverlayItem openStreetMapViewOverlayItem = new OpenStreetMapViewOverlayItem(description, description, geoPoint);
+    	items.add(openStreetMapViewOverlayItem);
     	this.openStreetMapView.invalidate(); //neu zeichnen
     }
     
     @Override
     public boolean onTouchEvent(MotionEvent event) 
     {
-    	Toast.makeText(this, "aha", Toast.LENGTH_LONG);
     	return super.onTouchEvent(event);
     }
     
@@ -152,8 +160,6 @@ public class CampusOSM extends Activity {
     {
     	switch (item.getItemId()) {
 		case 1:
-			OpenStreetMapViewOverlayItem openStreetMapViewOverlayItem = new OpenStreetMapViewOverlayItem("Hannover", "Tiny SampleDescription", new GeoPoint(52370816, 9735936));
-			addItem(openStreetMapViewOverlayItem);
 			return true;
 		}
 		return false;
