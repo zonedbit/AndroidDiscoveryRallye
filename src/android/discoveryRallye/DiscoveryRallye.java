@@ -2,7 +2,6 @@ package android.discoveryRallye;
 
 import android.app.TabActivity;
 import android.content.Intent;
-import android.discoveryRallye.R;
 import android.os.Bundle;
 import android.widget.TabHost;
 
