@@ -4,11 +4,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 
 import org.andnav.osm.util.GeoPoint;
+import org.andnav.osm.views.OpenStreetMapView;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -19,8 +21,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
 
-public class JSONRequest {
+
+public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoPoint>> {
 
 	//Quelle: http://wiki.openstreetmap.org/wiki/YOURS#Routing_API
 	private static final String BASEURL = "http://www.yournavigation.org/api/1.0/gosmore.php?";
@@ -35,59 +41,16 @@ public class JSONRequest {
 	private static final String GEOJSON = "geojson";
 	private static final String FOOT = "foot";
 	private static final Object MAPNIK = "mapnik";
+	private ProgressDialog dialog;
+	private final Activity mapActivity;
+	private final OpenStreetMapView openStreetMapView;
 	
-	public ArrayList<GeoPoint> createRequest(POI myLocation, POI destination)
+	public JSONRequest(Activity mapActivity, OpenStreetMapView openStreetMapView)
 	{
-		ArrayList<GeoPoint> geoPoints = new ArrayList<GeoPoint>();
-		
-		HttpClient httpClient = new DefaultHttpClient();
-		
-		HttpGet httpGet = new HttpGet(createURL(myLocation, destination));
-		
-		try {
-			HttpResponse response = httpClient.execute(httpGet);
-			
-			if(response.getStatusLine().getStatusCode() == 200)
-			{
-				HttpEntity entity = response.getEntity();
-				
-				if(entity != null)
-				{
-					String content = getContent(entity);
-					
-					JSONObject jsonObject = new JSONObject(content);
-					
-					JSONArray jsonArray = jsonObject.getJSONArray("coordinates");
-					
-					
-					for (int i = 0; i < jsonArray.length(); i++) 
-					{
-						JSONArray jsonGeoPoint = jsonArray.getJSONArray(i);
-						
-						double lon = (Double) jsonGeoPoint.get(0);
-						double lat = (Double) jsonGeoPoint.get(1);
-						
-						GeoPoint geoPoint = new GeoPoint(lat, lon);
-						
-						geoPoints.add(geoPoint);
-					}
-				}
-			}
-			else
-			{
-				//TODO: Fehlermeldung schmeißen
-			}
-			
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return geoPoints;
+		this.mapActivity = mapActivity;
+		this.openStreetMapView = openStreetMapView;
 	}
-
+	
 	/*
 	 * http://www.yournavigation.org/api/1.0/gosmore.php?format=geojson&flat=52.215676&flon=5.963946&tlat=52.2573&tlon=6.1799&v=foot&fast=1&layer=mapnik
 	 */
@@ -147,4 +110,74 @@ public class JSONRequest {
 		
 		return sb.toString();
 	}
+	
+	@Override
+	protected void onPreExecute() 
+	{
+		dialog = new ProgressDialog(mapActivity);
+		dialog.setMessage("Laden der Route");
+		dialog.show();
+	}
+
+	protected ArrayList<GeoPoint> doInBackground(ArrayList<POI>... pois) 
+	{
+		ArrayList<GeoPoint> geoPoints = new ArrayList<GeoPoint>();
+		
+		HttpClient httpClient = new DefaultHttpClient();
+		
+		HttpGet httpGet = new HttpGet(createURL(pois[0].get(0), pois[0].get(1)));
+		
+		try {
+			HttpResponse response = httpClient.execute(httpGet);
+			
+			if(response.getStatusLine().getStatusCode() == 200)
+			{
+				HttpEntity entity = response.getEntity();
+				
+				if(entity != null)
+				{
+					String content = getContent(entity);
+					
+					JSONObject jsonObject = new JSONObject(content);
+					
+					JSONArray jsonArray = jsonObject.getJSONArray("coordinates");
+					
+					
+					for (int i = 0; i < jsonArray.length(); i++) 
+					{
+						JSONArray jsonGeoPoint = jsonArray.getJSONArray(i);
+						
+						double lon = (Double) jsonGeoPoint.get(0);
+						double lat = (Double) jsonGeoPoint.get(1);
+						
+						GeoPoint geoPoint = new GeoPoint(lat, lon);
+						
+						geoPoints.add(geoPoint);
+					}
+				}
+			}
+			else
+			{
+				//TODO: Fehlermeldung schmeißen
+			}
+			
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return geoPoints;
+	}
+	
+	@Override
+	protected void onPostExecute(ArrayList<GeoPoint> result) 
+	{
+		RouteOverlay routeOverlay = new RouteOverlay(result, mapActivity, openStreetMapView);
+		openStreetMapView.getOverlays().add(routeOverlay);
+		openStreetMapView.invalidate();
+		dialog.dismiss();
+	}
+	
 }

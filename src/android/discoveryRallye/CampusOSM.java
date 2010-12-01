@@ -1,6 +1,7 @@
 package android.discoveryRallye;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import org.andnav.osm.ResourceProxy;
 import org.andnav.osm.views.overlay.OpenStreetMapViewSimpleLocationOverlay;
@@ -13,6 +14,11 @@ import org.andnav.osm.views.overlay.OpenStreetMapViewItemizedOverlayWithFocus;
 import org.andnav.osm.views.overlay.OpenStreetMapViewOverlayItem;
 
 import android.app.Activity;
+import android.content.Context;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -78,7 +84,7 @@ public class CampusOSM extends Activity {
     	super.onResume();
     }
 
-	private void addRouteOverlay() 
+	private void addRouteOverlay()
     {
 		POI myLocation = new POI(51.494995, 7.419649, "FB4");
 		POI destination = new POI(51.515872, 7.466852, "zuhause" );
@@ -87,11 +93,19 @@ public class CampusOSM extends Activity {
 		addItem(new GeoPoint(destination.getLat(), destination.getLon()), destination.getDescription());
 		
 		//TODO: Das muss man unbedingt in einen ProgressBar/Thread stecken
-		ArrayList<GeoPoint> geoPoints = new JSONRequest().createRequest(myLocation, destination);
+		JSONRequest jsonRequest = new JSONRequest(this, openStreetMapView);
+		 
+		ArrayList<POI> pois = new ArrayList<POI>();
+		pois.add(myLocation);
+		pois.add(destination);
+		 
+		 @SuppressWarnings("unchecked")
+		AsyncTask<ArrayList<POI>, Void, ArrayList<GeoPoint>> jsonResponse = jsonRequest.execute(pois);
+	}
+	
+	public void calculateRoute(POI destination)
+	{
 		
-		RouteOverlay routeOverlay = new RouteOverlay(geoPoints, this, openStreetMapView);
-		
-		openStreetMapView.getOverlays().add(routeOverlay);
 	}
 
 	private void addCampusOverlay() 
@@ -149,7 +163,8 @@ public class CampusOSM extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) 
     {
-    	menu.add(0, 1, Menu.FIRST, "Test");
+    	menu.add(0, 1, Menu.FIRST, "Test Route");
+    	menu.add(0, 2, Menu.NONE, "Test Save Position");
 		return true;
     }
     
@@ -160,7 +175,39 @@ public class CampusOSM extends Activity {
 		case 1:
 			addRouteOverlay();
 			return true;
+		case 2:
+			saveLocation();
+			return true;
 		}
 		return false;
     }
+
+
+	private void saveLocation() 
+	{
+		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		
+		Location lastKnownLocation = locationManager.getLastKnownLocation(getBestProvider(locationManager));
+
+		//TODO: Das muss noch entsprechend gefüllt werden!
+		POI poi = new POI(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude(), "My Location");
+		
+		//TODO: In der Datenbank speichern
+		
+		//Und das Item der Karte hinzufügen
+		addItem(new GeoPoint(poi.getLat(), poi.getLon()), poi.getDescription());
+		
+	}
+	
+	private String getBestProvider(LocationManager locationManager)
+	{
+		Criteria criteria = new Criteria();
+		criteria.setAccuracy(Criteria.ACCURACY_FINE);
+		criteria.setAltitudeRequired(false);
+		criteria.setBearingRequired(false);
+		criteria.setCostAllowed(true);
+		criteria.setPowerRequirement(Criteria.POWER_LOW);
+		
+		return locationManager.getBestProvider(criteria, true);
+	}
 }
