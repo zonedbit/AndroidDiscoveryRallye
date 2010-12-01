@@ -21,62 +21,67 @@ public class Note extends Activity{
 	 */
 	private String FILENAME = "private_notes";
 
-	/* (non-Javadoc)
+	/** 
+	 * Create the Note Activity
+	 * 
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.note);
-		
-		// Load the notes of the user
-		restoreNotes();
 	}
 	
 	
 	/**
 	 * 
+	 * Save the user notes
+	 * 
+	 * @see saveNotes()
+	 * @see android.app.Activity#onPause()
+	 */
+	@Override
+	protected void onPause() {
+		super.onPause();
+		saveNotes();
+	}
+
+
+
+
+	/** 
+	 * 
+	 * Retrieve the information from the file
+	 * 
+	 * @se restoreNotes()
+	 * @see android.app.Activity#onResume()
+	 */
+	@Override
+	protected void onResume() {
+		super.onResume();
+		// Load the notes of the user
+		restoreNotes();
+	}
+
+
+
+
+	/**
+	 * 
 	 * Handler to save the user notes
 	 * 
 	 * @param v The Android View
+	 * @see saveNotes()
 	 * @throws IOException 
 	 */
 	public void saveNoteHandler(View v) {
-		// TODO Delete me
-		Log.i("DiscoveryRalley","Note::saveNoteHandler(View v)");
-		
-		EditText et = (EditText)findViewById(R.id.noteEditTxt);
-		String string = et.getText().toString();
-		
-		OutputStreamWriter out = null;
-		try {
-			  // open file for writing
-			  out = 
-				  new OutputStreamWriter(openFileOutput(FILENAME,Context.MODE_PRIVATE));
-			  // write the content to the file
-			  out.write(string);
-			  // close the file
-			} catch (java.io.IOException e) {
-				Log.e("DiscoveryRalley","Note::saveNoteHandler(View v) IOException");
-			} finally {
-				if ( out != null ){
-					try {
-						out.close();
-					} catch (IOException e) {
-						Log.e("DiscoveryRalley",
-								"Note::saveNoteHandler(View v) " +
-								"can not close out stream");
-					}
-				}
-			}
+		saveNotes();
 	}
 	
 	/**
 	 * Read the saved user notes and write it into the EditText field
 	 */
 	private void restoreNotes (){
-		Log.i("DiscoveryRalley","Note::restoreNotes ()");
-		
 		
 		InputStream is = null;
 		try {
@@ -116,4 +121,34 @@ public class Note extends Activity{
 		}
 	}
 	
+	
+	/**
+	 * Save the using notes in the internal storage of this app
+	 */
+	private void saveNotes(){
+		EditText et = (EditText)findViewById(R.id.noteEditTxt);
+		String string = et.getText().toString();
+		
+		OutputStreamWriter out = null;
+		try {
+			  // open file for writing
+			  out = 
+				  new OutputStreamWriter(openFileOutput(FILENAME,Context.MODE_PRIVATE));
+			  // write the content to the file
+			  out.write(string);
+			  // close the file
+			} catch (java.io.IOException e) {
+				Log.e("DiscoveryRalley","Note::saveNoteHandler(View v) IOException");
+			} finally {
+				if ( out != null ){
+					try {
+						out.close();
+					} catch (IOException e) {
+						Log.e("DiscoveryRalley",
+								"Note::saveNoteHandler(View v) " +
+								"can not close out stream");
+					}
+				}
+			}
+	}
 }
