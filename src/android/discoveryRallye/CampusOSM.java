@@ -48,7 +48,7 @@ public class CampusOSM extends Activity {
         items.add(openStreetMapViewOverlayItem);
         
         addCampusOverlay();
-        addRouteOverlay();
+        
         addMyLocationOverlay();
         setPreferences();
         setInitialView();
@@ -89,11 +89,9 @@ public class CampusOSM extends Activity {
 		//TODO: Das muss man unbedingt in einen ProgressBar/Thread stecken
 		ArrayList<GeoPoint> geoPoints = new JSONRequest().createRequest(myLocation, destination);
 		
-		RouteOverlay routeOverlay = new RouteOverlay(geoPoints, this);
+		RouteOverlay routeOverlay = new RouteOverlay(geoPoints, this, openStreetMapView);
 		
 		openStreetMapView.getOverlays().add(routeOverlay);
-		this.openStreetMapView.invalidate();
-		
 	}
 
 	private void addCampusOverlay() 
@@ -160,6 +158,7 @@ public class CampusOSM extends Activity {
     {
     	switch (item.getItemId()) {
 		case 1:
+			addRouteOverlay();
 			return true;
 		}
 		return false;

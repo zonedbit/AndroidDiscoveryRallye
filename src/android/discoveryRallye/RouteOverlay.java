@@ -11,24 +11,25 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.graphics.Point;
 
 public class RouteOverlay extends OpenStreetMapViewOverlay {
 
-	private final ArrayList<GeoPoint> geoPoints;
+	private ArrayList<GeoPoint> geoPoints;
+	private OpenStreetMapView openStreetMapView = null;
 
-	public RouteOverlay(ArrayList<GeoPoint> geoPoints, Context context) 
+	public RouteOverlay(ArrayList<GeoPoint> geoPoints, Context context, OpenStreetMapView openStreetMapView) 
 	{
 		super(context);
 		this.geoPoints = geoPoints;
+		this.openStreetMapView  = openStreetMapView;
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas, OpenStreetMapView openStreetMapView) 
 	{
-		OpenStreetMapViewProjection projection = openStreetMapView.getProjection();
+		OpenStreetMapViewProjection projection = this.openStreetMapView.getProjection();
 	    Path p = new Path();
 	    
 	    //ersten Punkt setzen
@@ -51,8 +52,8 @@ public class RouteOverlay extends OpenStreetMapViewOverlay {
 	    }
 	    
 	    Paint polygonPaint = new Paint();
-	    polygonPaint.setStrokeWidth(5); 
-	    polygonPaint.setColor(Color.BLACK);
+	    polygonPaint.setStrokeWidth(3); 
+	    polygonPaint.setColor(Color.RED);
 	    polygonPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 	    polygonPaint.setAntiAlias(true);
 	    canvas.drawPath(p, polygonPaint);

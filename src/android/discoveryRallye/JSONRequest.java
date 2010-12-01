@@ -64,8 +64,8 @@ public class JSONRequest {
 					{
 						JSONArray jsonGeoPoint = jsonArray.getJSONArray(i);
 						
-						double lat = (Double) jsonGeoPoint.get(0);
-						double lon = (Double) jsonGeoPoint.get(1);
+						double lon = (Double) jsonGeoPoint.get(0);
+						double lat = (Double) jsonGeoPoint.get(1);
 						
 						GeoPoint geoPoint = new GeoPoint(lat, lon);
 						
