@@ -4,13 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
-import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 
 import org.andnav.osm.util.GeoPoint;
-import org.andnav.osm.views.OpenStreetMapView;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -22,8 +18,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.app.AlertDialog.Builder;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -48,12 +44,10 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 	private static final Object MAPNIK = "mapnik";
 	private ProgressDialog dialog;
 	private Activity listActivity;
-	private final OpenStreetMapView openStreetMapView;
 	
-	public JSONRequest(Activity listActivity, OpenStreetMapView openStreetMapView)
+	public JSONRequest(Activity listActivity)
 	{
 		this.listActivity = listActivity;
-		this.openStreetMapView = openStreetMapView;
 	}
 	
 	/*

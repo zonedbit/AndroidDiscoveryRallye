@@ -2,8 +2,6 @@ package android.discoveryRallye;
 
 import java.util.ArrayList;
 
-import org.andnav.osm.views.OpenStreetMapView;
-
 import android.app.ListActivity;
 import android.location.Location;
 import android.os.Bundle;
@@ -16,7 +14,6 @@ public class POIList extends ListActivity
 {
 	private static ArrayList<POI> pois = new ArrayList<POI>();
 	private static ArrayList<String> poisDesription = new ArrayList<String>();
-	private OpenStreetMapView openStreetMapView;
 	
 	protected void onCreate(Bundle savedInstanceState) 
 	{
@@ -26,8 +23,6 @@ public class POIList extends ListActivity
 		addListItem(new POI(51.494995, 7.419649, "FB4" ));
 		
 		setListAdapter((ListAdapter)  new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, poisDesription));
-		
-		openStreetMapView = CampusOSM.getOpenStreetMapView();
 	}
 	
 	@Override
@@ -42,14 +37,21 @@ public class POIList extends ListActivity
 	//Dann braucht diese Methode so nicht mehr.
 	public static void addListItem(POI poi)
 	{
-		poisDesription.add(poi.getDescription());
-		pois.add(poi);
+		if(poisDesription.contains(poi.getDescription()))
+		{
+			poisDesription.add(poi.getDescription());
+			pois.add(poi);
+		}
+		else
+		{
+			//TODO: Fehlermeldung: POI schon enthalten
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
 	private void addRouteOverlay(POI destination)
     {
-		JSONRequest jsonRequest = new JSONRequest(this, openStreetMapView);
+		JSONRequest jsonRequest = new JSONRequest(this);
 		 
 		ArrayList<POI> pois = new ArrayList<POI>();
 		

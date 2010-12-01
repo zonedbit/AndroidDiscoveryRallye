@@ -10,22 +10,18 @@ import org.andnav.osm.views.overlay.OpenStreetMapViewItemizedOverlayWithFocus;
 import org.andnav.osm.views.overlay.OpenStreetMapViewOverlayItem;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
-import android.widget.Toast;
 
 public class CampusOSM extends Activity {
 
-	private static OpenStreetMapView openStreetMapView;
+	private OpenStreetMapView openStreetMapView;
 	private OpenStreetMapViewItemizedOverlayWithFocus<OpenStreetMapViewOverlayItem> itemizedOverlay;
 	private ResourceProxy mResourceProxy;
 	
@@ -36,16 +32,11 @@ public class CampusOSM extends Activity {
 	private ArrayList<OpenStreetMapViewOverlayItem> items = new ArrayList<OpenStreetMapViewOverlayItem>();
 	private MyLocationOverlay myLocationOverlay;
 	
-	public static OpenStreetMapView getOpenStreetMapView()
-	{
-		return openStreetMapView;
-	}
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        CampusOSM.openStreetMapView = new OpenStreetMapView(this);
+        openStreetMapView = new OpenStreetMapView(this);
         this.mResourceProxy = new ResourceProxyImpl(getApplicationContext());
         
         //ein Item  muss mindestens dabei, sonst kommt der ItemizedOverlay nicht klar
@@ -82,7 +73,7 @@ public class CampusOSM extends Activity {
 	        //Batterie sparen
 	        myLocationOverlay.setLocationUpdateMinDistance(100);
 	        myLocationOverlay.setLocationUpdateMinTime(6000);
-	        CampusOSM.openStreetMapView.getOverlays().add(this.myLocationOverlay);
+	        openStreetMapView.getOverlays().add(this.myLocationOverlay);
 	}
     
     @Override
@@ -104,7 +95,7 @@ public class CampusOSM extends Activity {
 	        this.itemizedOverlay = new OpenStreetMapViewItemizedOverlayWithFocus<OpenStreetMapViewOverlayItem>(this, items, new ItemGestureListener<OpenStreetMapViewOverlayItem>(), mResourceProxy);
 	        this.itemizedOverlay.setFocusItemsOnTap(true);
 	        this.itemizedOverlay.setFocusedItem(0); //TODO: Dadurch zoomt er erst zur FH und dann zur später zur eigenen Position -> Gewollt?
-	        CampusOSM.openStreetMapView.getOverlays().add(this.itemizedOverlay);
+	        openStreetMapView.getOverlays().add(this.itemizedOverlay);
 	}
     
     public void addItem(GeoPoint geoPoint, String description)
@@ -112,7 +103,7 @@ public class CampusOSM extends Activity {
     	//TODO: Long- und Shortdescription benutzen?
     	OpenStreetMapViewOverlayItem openStreetMapViewOverlayItem = new OpenStreetMapViewOverlayItem(description, description, geoPoint);
     	items.add(openStreetMapViewOverlayItem);
-    	CampusOSM.openStreetMapView.invalidate(); //neu zeichnen
+    	openStreetMapView.invalidate(); //neu zeichnen
     }
     
     @Override
@@ -123,7 +114,7 @@ public class CampusOSM extends Activity {
     
 	private void setPreferences() 
     {
-    	CampusOSM.openStreetMapView.setBuiltInZoomControls(true);
+    	openStreetMapView.setBuiltInZoomControls(true);
 	}
 
 	/*
@@ -133,7 +124,7 @@ public class CampusOSM extends Activity {
     {
     	relativeLayout = new RelativeLayout(this);
     	//TOOD: Ob ich das nicht in das XML übertragen kann?
-        relativeLayout.addView(CampusOSM.openStreetMapView, new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+        relativeLayout.addView(openStreetMapView, new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
         this.setContentView(relativeLayout);
     }
     
@@ -142,16 +133,16 @@ public class CampusOSM extends Activity {
      */
     public void setInitialView()
     {
-    	CampusOSM.openStreetMapView.getController().setZoom(16);
-    	CampusOSM.openStreetMapView.getController().setCenter(fb4);
-    	CampusOSM.openStreetMapView.invalidate();
+    	openStreetMapView.getController().setZoom(16);
+    	openStreetMapView.getController().setCenter(fb4);
+    	openStreetMapView.invalidate();
     }
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) 
     {
     	menu.add(0, 1, Menu.FIRST, "Zeige Standort");
-    	menu.add(0, 2, Menu.NONE, "Test Save Position");
+    	menu.add(0, 2, Menu.NONE, "Speichere aktuelle Location");
 		return true;
     }
     
@@ -162,11 +153,11 @@ public class CampusOSM extends Activity {
 		case 1:
 			Location retrieveLocation = GeoUtils.retrieveLocation(this);
 			GeoPoint geoPoint = new GeoPoint(retrieveLocation.getLatitude(), retrieveLocation.getLongitude());
-			CampusOSM.openStreetMapView.getController().setCenter(geoPoint);
+			openStreetMapView.getController().setCenter(geoPoint);
 			return true;
 		case 2:
 			Location retrievedLocation = GeoUtils.retrieveLocation(this);
-			//TODO: Das muss noch mit einer Beschreibung gefüllt werden
+			//TODO: Das muss noch mit einer Beschreibung gefüllt werden -> Da muss ein Dialog her
 			//TODO: In der Datenbank speichern
 			POI poi = new POI(retrievedLocation.getLatitude(), retrievedLocation.getLongitude(), "My Location");
 			distributePOI(poi);
@@ -179,6 +170,7 @@ public class CampusOSM extends Activity {
     private void distributePOI(POI poi)
     {
     	addItem(new GeoPoint(poi.getLat(), poi.getLon()), poi.getDescription());
+    	//TODO: Hier muss der POI in der Datenbank gespeichert werden.
     	POIList.addListItem(poi);
     }
 }
