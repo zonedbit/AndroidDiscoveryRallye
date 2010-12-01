@@ -7,7 +7,9 @@ import org.andnav.osm.views.OpenStreetMapView;
 import org.andnav.osm.views.OpenStreetMapView.OpenStreetMapViewProjection;
 import org.andnav.osm.views.overlay.OpenStreetMapViewOverlay;
 
-import android.content.Context;
+import android.app.Activity;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -18,12 +20,14 @@ public class RouteOverlay extends OpenStreetMapViewOverlay {
 
 	private ArrayList<GeoPoint> geoPoints;
 	private OpenStreetMapView openStreetMapView = null;
+	private final Activity activity;
 
-	public RouteOverlay(ArrayList<GeoPoint> geoPoints, Context context, OpenStreetMapView openStreetMapView) 
+	public RouteOverlay(ArrayList<GeoPoint> geoPoints, OpenStreetMapView openStreetMapView, Activity activity) 
 	{
-		super(context);
+		super(activity);
 		this.geoPoints = geoPoints;
 		this.openStreetMapView  = openStreetMapView;
+		this.activity = activity;
 	}
 
 	@Override
@@ -34,14 +38,12 @@ public class RouteOverlay extends OpenStreetMapViewOverlay {
 	    
 	    //ersten Punkt setzen
 	    Point startingPoint = new Point();
-	    
-	    GeoPoint geoPoint = geoPoints.get(0);
-	    
-	    projection.toMapPixels(geoPoint, startingPoint);
-	    p.moveTo(startingPoint.x, startingPoint.y);
-	    
 	    if(!geoPoints.isEmpty())
 	    {
+	    	GeoPoint geoPoint = geoPoints.get(0);
+	    	projection.toMapPixels(geoPoint, startingPoint);
+		    p.moveTo(startingPoint.x, startingPoint.y);
+	    
 	    	for (int i = 1; i < geoPoints.size() - 1; i++) 
 	    	{
 	    		Point to = new Point();
@@ -49,6 +51,23 @@ public class RouteOverlay extends OpenStreetMapViewOverlay {
 	    		p.lineTo(to.x, to.y);
 	    		p.moveTo(to.x, to.y);
 	    	}
+	    }
+	    else
+	    {
+	    	Builder builder = new Builder(activity);
+			builder.setTitle("Probleme beim Darstellen der Route");
+			builder.setMessage("Die Route konnte nicht dargestellt werden");
+			builder.setCancelable(false);
+			builder.setPositiveButton("OK", new DialogInterface.OnClickListener() 
+			{
+				public void onClick(DialogInterface dialog, int which) 
+				{
+					dialog.cancel();
+				}
+			});
+			
+			builder.create();
+			builder.show();
 	    }
 	    
 	    Paint polygonPaint = new Paint();

@@ -19,4 +19,6 @@ public class CampusItemOverlay extends OpenStreetMapViewItemizedOverlayWithFocus
 		super(ctx, items, itemTapListener, resourceProxy);
 	}
 
+	
+	
 }

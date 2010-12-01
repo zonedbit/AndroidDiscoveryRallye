@@ -23,7 +23,12 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Bundle;
+import android.util.Log;
 
 
 public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoPoint>> {
@@ -42,12 +47,12 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 	private static final String FOOT = "foot";
 	private static final Object MAPNIK = "mapnik";
 	private ProgressDialog dialog;
-	private final Activity mapActivity;
+	private Activity listActivity;
 	private final OpenStreetMapView openStreetMapView;
 	
-	public JSONRequest(Activity mapActivity, OpenStreetMapView openStreetMapView)
+	public JSONRequest(Activity listActivity, OpenStreetMapView openStreetMapView)
 	{
-		this.mapActivity = mapActivity;
+		this.listActivity = listActivity;
 		this.openStreetMapView = openStreetMapView;
 	}
 	
@@ -97,7 +102,7 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 	private String getContent(HttpEntity entity) throws IOException {
 		InputStream content = entity.getContent();
 		
-		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(content));
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(content), 8);
 		
 		StringBuilder sb = new StringBuilder();
 		
@@ -114,13 +119,15 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 	@Override
 	protected void onPreExecute() 
 	{
-		dialog = new ProgressDialog(mapActivity);
+		dialog = new ProgressDialog(listActivity);
 		dialog.setMessage("Laden der Route");
 		dialog.show();
 	}
 
 	protected ArrayList<GeoPoint> doInBackground(ArrayList<POI>... pois) 
 	{
+		Log.d(JSONRequest.class.getName(), "Abfrage des Webservices startet...");
+		
 		ArrayList<GeoPoint> geoPoints = new ArrayList<GeoPoint>();
 		
 		HttpClient httpClient = new DefaultHttpClient();
@@ -136,14 +143,15 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 				
 				if(entity != null)
 				{
+					Log.d(JSONRequest.class.getName(), "Rückgabewert vorhanden");
+					
 					String content = getContent(entity);
 					
 					JSONObject jsonObject = new JSONObject(content);
 					
 					JSONArray jsonArray = jsonObject.getJSONArray("coordinates");
 					
-					
-					for (int i = 0; i < jsonArray.length(); i++) 
+					for (int i = 0; i < jsonArray.length() - 1; i++) 
 					{
 						JSONArray jsonGeoPoint = jsonArray.getJSONArray(i);
 						
@@ -158,7 +166,20 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 			}
 			else
 			{
-				//TODO: Fehlermeldung schmeißen
+				Builder builder = new Builder(listActivity);
+				builder.setTitle("Probleme beim Laden der Route");
+				builder.setMessage("Routeninformationen konnten nicht heruntergeladen werden - Service nicht erreichbar?");
+				builder.setCancelable(false);
+				builder.setPositiveButton("OK", new DialogInterface.OnClickListener() 
+				{
+					public void onClick(DialogInterface dialog, int which) 
+					{
+						dialog.cancel();
+					}
+				});
+				
+				builder.create();
+				builder.show();
 			}
 			
 		} catch (ClientProtocolException e) {
@@ -168,16 +189,26 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+		
+		Log.d(JSONRequest.class.getName(), "Abfrage des Webservices abgeschlossen");
 		return geoPoints;
 	}
 	
 	@Override
 	protected void onPostExecute(ArrayList<GeoPoint> result) 
 	{
-		RouteOverlay routeOverlay = new RouteOverlay(result, mapActivity, openStreetMapView);
-		openStreetMapView.getOverlays().add(routeOverlay);
-		openStreetMapView.invalidate();
-		dialog.dismiss();
+		if(result.size() > 0)
+		{
+			Intent intent = new Intent(listActivity, DiscoveryRallye.class);
+			Bundle bundle = new Bundle();
+			
+			bundle.putParcelableArrayList("poi", result);
+			intent.putExtras(bundle);
+			dialog.dismiss();
+			listActivity.startActivity(intent);
+			listActivity.finish();
+		}
+		
 	}
 	
 }
