@@ -45,12 +45,9 @@ public class Note extends Activity{
 		// TODO Delete me
 		Log.i("DiscoveryRalley","Note::saveNoteHandler(View v)");
 		
-		// TODO Get the text form the EditText field
-		//String string = "hello world!\n";
-		
 		EditText et = (EditText)findViewById(R.id.noteEditTxt);
 		String string = et.getText().toString();
-
+		
 		OutputStreamWriter out = null;
 		try {
 			  // open file for writing
@@ -89,11 +86,17 @@ public class Note extends Activity{
 			
 			// Reading from the file
 			String line = "";
+			StringBuilder strB = new StringBuilder();
 			while ( (line=br.readLine()) != null){
-				EditText et = (EditText)findViewById(R.id.noteEditTxt);
-				et.setText(line);
+				strB.append(line);
+				strB.append("\n");
+				
 			}
-
+			
+			// Setting the file content to the EditText View
+			EditText et = (EditText)findViewById(R.id.noteEditTxt);
+			et.setText(strB.toString());
+			
 			
 		} catch (FileNotFoundException e) {
 			Log.e("DiscoveryRalley", 
