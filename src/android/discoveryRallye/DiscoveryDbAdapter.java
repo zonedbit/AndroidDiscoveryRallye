@@ -8,28 +8,14 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-public class DiscoveryDbAdapter {
-	
-	/*
-	 * Name of the database, table of the pois and the version
-	 * of the database 
-	 */
-    private static final String DB_NAME         = "discoveryRallye";
-    private static final String DB_TABLE_POIS   = "pois";
-    private static final int    DB_VERSION 		= 1;
-    
-    /* The database attributes since version 1*/
-    private static final String ATTR_ID   = "_id";
-    public static final String ATTR_NAME = "name";
-    private static final String ATTR_LON  = "longitude";
-    private static final String ATTR_LAT  = "latitude";
+public class DiscoveryDbAdapter implements IDBPOI{
     
     /* Database statements since version 1*/
     private static final String STMT_CREATE = 
     	"create table " + DB_TABLE_POIS 
     					+ " ("
     					+ 		ATTR_ID   + " integer primary key autoincrement, "
-    					+ 	    ATTR_NAME + " text   not null, " 
+    					+ 	    ATTR_NAME + " text   unique  , " 
     					+       ATTR_LON  + " double not null, "
     					+       ATTR_LAT  + " double not null  "
     					+ ");";
@@ -88,22 +74,40 @@ public class DiscoveryDbAdapter {
     }
     
     // TODO Comment me
-    // TODO Param POI Object
-    public long insertPoi(){
+    public long insertPoi(POI poi){
     	// TODO Delete me
     	Log.i("DiscoveryRallye","DiscoveryDbAdapter::insertPoi()");
     	ContentValues val = new ContentValues();
-    	val.put( ATTR_NAME, "FHDO");
-    	val.put(ATTR_LON, "51.494995");
-    	val.put(ATTR_LAT, "7.419649");
+    	val.put( ATTR_NAME, poi.getDescription());
+    	val.put(ATTR_LON, 	poi.getLon());
+    	val.put(ATTR_LAT, 	poi.getLat());
     	
     	return sldb.insert(DB_TABLE_POIS, null, val);
     }
     
     // TODO Comment me
-    public Cursor getNotes(){
+    public boolean deletePOI(String name){
+    	return 
+    		sldb.delete(DB_TABLE_POIS, ATTR_NAME + "=" + "'"+name+"'", null) > 0;
+    }
+    
+    // TODO Comment me
+    public Cursor getPOIs(){
     	return sldb.query(DB_TABLE_POIS, new String[] {ATTR_ID, ATTR_NAME,
                 ATTR_LON, ATTR_LAT}, null, null, null, null, null);
+    }
+    
+    // TODO Comment me
+    public void resetDB(){
+    	// Drop table and create it again
+    	sldb.execSQL(STMT_DROP_POIS);
+    	sldb.execSQL(STMT_CREATE);
+    	
+    	// Set all defaults POIs
+		insertPoi(new POI(51.493670, 7.420191, "FH FB Informatik" ));
+		insertPoi(new POI(51.493396, 7.416286, "Sonnendeck" ));
+		insertPoi(new POI(51.492748, 7.416855, "Uni Bibliothek" ));
+		insertPoi(new POI(51.493009, 7.414805, "Uni Mensa" ));
     }
 
 }
