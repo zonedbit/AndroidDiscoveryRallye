@@ -13,7 +13,7 @@ import android.widget.ListView;
 public class POIList extends ListActivity 
 {
 	private static ArrayList<POI> pois = new ArrayList<POI>();
-	private static ArrayList<String> poisDesription = new ArrayList<String>();
+	private static ArrayList<String> poisDescription = new ArrayList<String>();
 	
 	protected void onCreate(Bundle savedInstanceState) 
 	{
@@ -22,7 +22,7 @@ public class POIList extends ListActivity
 		//TODO: Test
 		addListItem(new POI(51.494995, 7.419649, "FB4" ));
 		
-		setListAdapter((ListAdapter)  new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, poisDesription));
+		setListAdapter((ListAdapter)  new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, poisDescription));
 	}
 	
 	@Override
@@ -37,9 +37,9 @@ public class POIList extends ListActivity
 	//Dann braucht diese Methode so nicht mehr.
 	public static void addListItem(POI poi)
 	{
-		if(poisDesription.contains(poi.getDescription()))
+		if(!poisDescription.contains(poi.getDescription()))
 		{
-			poisDesription.add(poi.getDescription());
+			poisDescription.add(poi.getDescription());
 			pois.add(poi);
 		}
 		else
