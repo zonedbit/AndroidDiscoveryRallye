@@ -56,24 +56,34 @@ public class DiscoveryDbAdapter implements IDBPOI{
      * 
      * @param ctx The Android context
      */
-    // TODO Maybe private
     public DiscoveryDbAdapter(Context ctx){
     	this.ctx = ctx; 
     }
     
-    // TODO Maybe static
+   
+    // TODO Comment me
     public DiscoveryDbAdapter open() throws SQLiteException{
     	dbHelper = new DatabaseHelper(ctx);
     	sldb = dbHelper.getWritableDatabase();
     	return this;
     }
     
-    // TODO Comment me
+    /**
+     * Close the DB Connection
+     */
     public void close(){
-    	dbHelper.close();
+    	if ( dbHelper != null ){
+    		dbHelper.close();
+    	}
     }
     
-    // TODO Comment me
+    /**
+     * Insert a POI object into the SQLite database
+     * 
+     * @param poi the POI object
+     * @return -1 if a POI with the same name already in the database; otherwise
+     * 		   the row id (primary key) 
+     */
     public long insertPoi(POI poi){
     	// TODO Delete me
     	Log.i("DiscoveryRallye","DiscoveryDbAdapter::insertPoi()");
@@ -81,23 +91,38 @@ public class DiscoveryDbAdapter implements IDBPOI{
     	val.put( ATTR_NAME, poi.getDescription());
     	val.put(ATTR_LON, 	poi.getLon());
     	val.put(ATTR_LAT, 	poi.getLat());
-    	
-    	return sldb.insert(DB_TABLE_POIS, null, val);
+    	long res = sldb.insert(DB_TABLE_POIS, null, val);
+    	Log.i("DiscoveryRallye","DiscoveryDbAdapter::insertPoi() id " + res);
+    	return res;
     }
     
-    // TODO Comment me
+    /**
+     * Delete a record from the table DB_TABLE_POIs
+     * 
+     * @param name the name of the POI have to be equal ATTR_NAME
+     * @see DB_TABLE_POIS
+     * @see ATTR_NAME
+     * @return true if the record was deleted; otherwise false
+     */
     public boolean deletePOI(String name){
     	return 
     		sldb.delete(DB_TABLE_POIS, ATTR_NAME + "=" + "'"+name+"'", null) > 0;
     }
     
-    // TODO Comment me
+    /**
+     * Fetch all POIs from the DB
+     * 
+     * @return The Cursor with contains the result set
+     */
     public Cursor getPOIs(){
     	return sldb.query(DB_TABLE_POIS, new String[] {ATTR_ID, ATTR_NAME,
                 ATTR_LON, ATTR_LAT}, null, null, null, null, null);
     }
     
-    // TODO Comment me
+    /**
+     * Restore the default records in the DB.
+     * <b>Warning:</b> already created POIs will be deleted
+     */
     public void resetDB(){
     	// Drop table and create it again
     	sldb.execSQL(STMT_DROP_POIS);

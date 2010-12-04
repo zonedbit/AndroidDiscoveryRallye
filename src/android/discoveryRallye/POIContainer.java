@@ -38,27 +38,49 @@ public class POIContainer implements IDBPOI {
 		return poiCon;
 	}
 	
-	// TODO Comment me
-	public void addPOI(POI poi){
-		pois.add(poi);
-		poisName.add(poi.getDescription());
-	}
 	
-	// TODO Comment me
-	public void addPOIdb(POI poi){
-		addPOI(poi);
+	/**
+	 * Add a POI 
+	 * 
+	 * The POI is added to the SQLite DB and to both lists of the POIContainer
+	 * 
+	 * @param poi a POI object
+	 * @return -1 if the POI was not added, otherwise a value greater or equal 0
+	 */
+	public long addPOI(POI poi){
+		long result = -1;
+		
 		DiscoveryDbAdapter db = new DiscoveryDbAdapter(ctx);
 		db.open();
 		
 		if (db != null ){
-			db.insertPoi(poi);
+			result = db.insertPoi(poi);
 			db.close();
 		}else{
-			Log.e("DiscoveryRallye","POIContainer::addPOIdb()");
+			Log.e("DiscoveryRallye","ERROR POIContainer::addPOIdb()");
 		}
+
+		/* 
+		 * POI does not exist in the database, so add it 
+		 * to the lists 
+		 */
+		if ( result >= 0){
+			pois.add(poi);
+			poisName.add(poi.getDescription());
+		}
+		
+		return result;
 	}
 	
-	//TODO Comment me
+	/**
+	 * Remove a POI.
+	 * 
+	 * The POI is deleted form the POI Container and form
+	 * the SQLite database.
+	 * 
+	 * @param name the name of the POI
+	 * @param id the id in the ListView (is equal with the id in the ArrayLists)
+	 */
 	public void removePOI(String name, long id){
 		// Delete form the ArrayLists
 		pois.remove((int)id);
@@ -75,24 +97,45 @@ public class POIContainer implements IDBPOI {
 		}
 	}
 	
-	// TODO Comment me
+	/**
+	 * Getter for the POI at the position index
+	 * 
+	 * If index less then zero or greater then the total size
+	 * of the list, the POI at position zero will be returned
+	 * 
+	 * @param index the position
+	 * @see POI
+	 * @return the POI object
+	 */
 	public POI getPOI(int index){
 		index = ( index <0 || index >= pois.size()) ? 0 : index;
 		return pois.get(index);
 	}
 	
-	// TODO Comment me
+	/**
+	 * Get method for the ArrayList, that contains all POIs objects
+	 * 
+	 * @return the ArrayList with all POIs
+	 */
 	public ArrayList<POI> getALLPOIs(){
 		return pois;
 	}
 	
-	// TODO comment me
+	/**
+	 * Get method for the ArrayList, that contains all names of the POIs
+	 * 
+	 * @return the ArrayList with all POI names
+	 */
 	public ArrayList<String> getAllPOIsName(){
 		return poisName;
 	}
 	
-	// TODO Comment me
-	public int numberOfPois(){
+	/**
+	 * The total number of stored POIs
+	 *  
+	 * @return number of POIs objects
+	 */
+	public int numberOfPOIs(){
 		return pois.size();
 	}
 	
@@ -105,7 +148,7 @@ public class POIContainer implements IDBPOI {
 			db.open();
 			
 			//TODO Delete me
-//			db.resetDB();
+			db.resetDB();
 			
 			Cursor c = db.getPOIs();
 			/* If c a vaild cursor */
