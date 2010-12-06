@@ -2,13 +2,17 @@ package android.discoveryRallye;
 
 import java.util.ArrayList;
 
+import android.app.Dialog;
 import android.app.ListActivity;
+import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class POIList extends ListActivity {
@@ -21,19 +25,27 @@ public class POIList extends ListActivity {
 		this.fillList();
 
 	}
+	
+
+	
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
-		POI poi = poic.getPOI(position);
 		
-		long result = poic.addPOI(new POI(51.493670, 7.420191, "Fake " +position ));
-		if ( result <= 0){
-			Toast.makeText(this, "POI bereits vorhanden", Toast.LENGTH_SHORT)
-				.show();
-		}
+		/* Create the custom dialog*/		
+		POIDialog dlg = new POIDialog(this);
+		dlg.show();
+		
+//		POI poi = poic.getPOI(position);
+		
+//		long result = poic.addPOI(new POI(51.493670, 7.420191, "Fake " +position ));
+//		if ( result <= 0){
+//			Toast.makeText(this, "POI bereits vorhanden", Toast.LENGTH_SHORT)
+//				.show();
+//		}
 		
 //		poic.removePOI(poi.getDescription(), id);
-		fillList(); // refresh the view
+//		fillList(); // refresh the view
 
 		// TODO remove comment
 		// addRouteOverlay(poi);

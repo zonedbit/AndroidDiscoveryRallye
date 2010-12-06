@@ -8,4 +8,11 @@
 	
 	<string name="noteHeaderTxtView">Deine Notizen</string>
 	<string name="noteSaveBtn">Speichern</string>
+	
+	<string name="poiDialogTitle">Aktion für den POI: </string>
+	<string name="poiDialogTextRename">Umbenennen des POI zu:</string>
+	<string name="poiDialogEditText">Neuer Name für den POI</string>
+	<string name="poiDialogButtonRename">OK</string>
+	<string name="poiDialogButtonGoTo">Gehe zu</string>
+	<string name="poiDialogButtonDelete">Löschen</string>
 </resources>
