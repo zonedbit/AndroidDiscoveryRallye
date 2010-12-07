@@ -37,15 +37,8 @@ public class POIList extends ListActivity
 	//Dann braucht diese Methode so nicht mehr.
 	public static void addListItem(POI poi)
 	{
-		if(poisDesription.contains(poi.getDescription()))
-		{
 			poisDesription.add(poi.getDescription());
 			pois.add(poi);
-		}
-		else
-		{
-			//TODO: Fehlermeldung: POI schon enthalten
-		}
 	}
 	
 	@SuppressWarnings("unchecked")
