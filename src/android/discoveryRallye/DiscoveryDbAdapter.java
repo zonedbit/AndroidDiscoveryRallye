@@ -85,15 +85,12 @@ public class DiscoveryDbAdapter implements IDBPOI{
      * 		   the row id (primary key) 
      */
     public long insertPoi(POI poi){
-    	// TODO Delete me
-    	Log.i("DiscoveryRallye","DiscoveryDbAdapter::insertPoi()");
     	ContentValues val = new ContentValues();
     	val.put( ATTR_NAME, poi.getDescription());
     	val.put(ATTR_LON, 	poi.getLon());
     	val.put(ATTR_LAT, 	poi.getLat());
-    	long res = sldb.insert(DB_TABLE_POIS, null, val);
-    	Log.i("DiscoveryRallye","DiscoveryDbAdapter::insertPoi() id " + res);
-    	return res;
+
+    	return sldb.insert(DB_TABLE_POIS, null, val);
     }
     
     /**
@@ -107,6 +104,22 @@ public class DiscoveryDbAdapter implements IDBPOI{
     public boolean deletePOI(String name){
     	return 
     		sldb.delete(DB_TABLE_POIS, ATTR_NAME + "=" + "'"+name+"'", null) > 0;
+    }
+    
+    /**
+     * Rename a POI in the SQLite database
+     * 
+     * @param oldName The current name
+     * @param newName The new name
+     * @return The number of affected rows, should be one; otherwise a
+     * 		   error is occurred.
+     */
+    public int renamePOI(String oldName, String newName){
+    	ContentValues val = new ContentValues();
+    	val.put(ATTR_NAME, newName);
+
+    	return 
+    		sldb.update(DB_TABLE_POIS, val, ATTR_NAME + "=" + "'"+oldName+"'", null);
     }
     
     /**
@@ -134,5 +147,4 @@ public class DiscoveryDbAdapter implements IDBPOI{
 		insertPoi(new POI(51.492748, 7.416855, "Uni Bibliothek" ));
 		insertPoi(new POI(51.493009, 7.414805, "Uni Mensa" ));
     }
-
 }

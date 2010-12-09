@@ -81,7 +81,8 @@ public class POIContainer implements IDBPOI {
 	 * @param name the name of the POI
 	 * @param id the id in the ListView (is equal with the id in the ArrayLists)
 	 */
-	public void removePOI(String name, long id){
+	// TODO first parameter isn't necessary 
+	public void removePOI(String name, int id){
 		// Delete form the ArrayLists
 		pois.remove((int)id);
 		poisName.remove((int)id);
@@ -91,6 +92,32 @@ public class POIContainer implements IDBPOI {
 		db.open();
 		if (db != null ){
 			db.deletePOI(name);
+			db.close();
+		}else{
+			Log.e("DiscoveryRallye","POIContainer::removePOI(long id)");
+		}
+	}
+	
+	/**
+	 * To rename a POI 
+	 * 
+	 * A POI is renamed in this POIContainer as well as in the SQLite 
+	 * database.
+	 * 
+	 * @param id		The position index of the POI in the List
+	 * @param newName	The new name of the POI
+	 */
+	public void renamePOI(int id, String newName){
+		DiscoveryDbAdapter db = new DiscoveryDbAdapter(ctx);
+		
+		String oldName = poisName.get(id);
+		
+		pois.get(id).setDescription(newName);
+		poisName.set(id, newName);
+		
+		db.open();
+		if (db != null ){
+			db.renamePOI(oldName, newName);
 			db.close();
 		}else{
 			Log.e("DiscoveryRallye","POIContainer::removePOI(long id)");
@@ -147,8 +174,8 @@ public class POIContainer implements IDBPOI {
 		if ( db != null ){
 			db.open();
 			
-			//TODO Delete me
-			db.resetDB();
+			//TODO Delete Reset DB
+//			db.resetDB();
 			
 			Cursor c = db.getPOIs();
 			/* If c a vaild cursor */
@@ -173,10 +200,6 @@ public class POIContainer implements IDBPOI {
 						// Adding the POI to the ArrayList
 						pois.add( new POI(lat, lon, name) );
 						poisName.add(name);
-						
-						// TODO Delete me
-						Log.i("SQLite1","Name: " +name + "lat/lon " +
-								lat + "/" + lon);
 							
 					}while(c.moveToNext());
 				}

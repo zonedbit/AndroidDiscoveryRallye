@@ -2,9 +2,7 @@ package android.discoveryRallye;
 
 import java.util.ArrayList;
 
-import android.app.Dialog;
 import android.app.ListActivity;
-import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,18 +10,18 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-public class POIList extends ListActivity {
+public class POIList extends ListActivity implements IUIRefreshable {
 	private POIContainer poic;
 
+	/**
+	 * Create this activity
+	 */
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		poic = POIContainer.getInstance(getBaseContext());
-		this.fillList();
-
+		this.uiRefresh();
 	}
 	
 
@@ -33,7 +31,7 @@ public class POIList extends ListActivity {
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		
 		/* Create the custom dialog*/		
-		POIDialog dlg = new POIDialog(this);
+		POIDialog dlg = new POIDialog(this, this, position);
 		dlg.show();
 		
 //		POI poi = poic.getPOI(position);
@@ -74,9 +72,11 @@ public class POIList extends ListActivity {
 	 * @see POI
 	 * @see POIContainer
 	 */
-	private void fillList() {
+	@Override
+	public void uiRefresh() {
+		
+		// TODO Ensure that poic isn't null
 		setListAdapter((ListAdapter) new ArrayAdapter<String>(this,
 				R.layout.poi_row, poic.getAllPOIsName()));
 	}
-
 }

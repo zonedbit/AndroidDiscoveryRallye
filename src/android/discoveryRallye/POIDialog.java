@@ -2,20 +2,37 @@ package android.discoveryRallye;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 public class POIDialog extends Dialog {
 
+	private int    	poiID;
 	private Context ctx;
+	POIContainer poic;
+	IUIRefreshable uiPOIList;
 	
-	// TODO Comment me
-	public POIDialog(Context ctx){
+	/**
+	 * Constructor to create the Dialog. This dialog isn't
+	 * modal, such as any Android dialog.
+	 * 
+	 * It is necessary that the class which creates this dialog
+	 * implements the IUIRefreshable interface
+	 * 
+	 * @param ctx   The Dialog Environment
+	 * @param ui    Interface for the callback method 
+	 * @param poiID The position index of the POI in the list
+	 * @see IUIRefreshable
+	 */
+	public POIDialog(Context ctx, IUIRefreshable ui, int poiID ){
 		super(ctx);
-		this.ctx = ctx;
+		this.ctx     = ctx;
+		this.poiID 	 = poiID;
+		this.poic    = POIContainer.getInstance(ctx);
+		this.uiPOIList = ui;
 	}
 
 	/* (non-Javadoc)
@@ -26,10 +43,20 @@ public class POIDialog extends Dialog {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.poi_dialog);
 		
-		String title = ctx.getString(R.string.poiDialogTitle);
-		setTitle(title + " " + "XY");
+		// The Name of the POI
+		String poiName = "Unknown POI";
+		if ( poic != null ){
+			poiName = poic.getPOI(poiID).getDescription();
+		}
 		
-		/* Setup Listener sadly the xml version android:onClick dosen't work*/
+		/* Set the title of the dialog box */
+		String title = ctx.getString(R.string.poiDialogTitle);
+		setTitle(title + " " + poiName );
+		
+		/* Set the text of the edit field */
+		((EditText)findViewById(R.id.poiDialogEditText)).setText(poiName);
+		
+		/* Setup Listener sadly the xml version android:onClick dosen't work */
 		((Button)findViewById(R.id.poiDialogButtonRename))
 			.setOnClickListener(new OnClickPOIRename());
 		
@@ -38,10 +65,6 @@ public class POIDialog extends Dialog {
 		
 		((Button)findViewById(R.id.poiDialogButtonDelete))
 			.setOnClickListener(new OnClickPOIDelete());
-
-		// TODO Maybe not necessary
-		/* is called after cancel() */
-		setOnCancelListener(new OnClose());
 	}
 
 
@@ -51,12 +74,19 @@ public class POIDialog extends Dialog {
 	 */
 	private class OnClickPOIRename implements android.view.View.OnClickListener{
 		public void onClick(View v) {
-			Log.i("DiscoveryRallye","POIDialog::onClickPOIRename()");
 			
-			// TODO Implement me
+			// Get the text from the EditText field
+			String newName = ((EditText)findViewById(R.id.poiDialogEditText))
+								.getText().toString(); 
+				
+			// Update the Point in the POIContainer
+			poic.renamePOI(poiID, newName);
 			
 			// Close the Dialog
 			cancel();
+			
+			// Refresh the user interface
+			uiPOIList.uiRefresh();
 		}
 	}
 	
@@ -68,27 +98,23 @@ public class POIDialog extends Dialog {
 			
 			// Close the Dialog
 			cancel();
+			
+			// Refresh the user interface
+			uiPOIList.uiRefresh();
 		}
 	}
 	
 	private class OnClickPOIDelete implements android.view.View.OnClickListener{
 		public void onClick(View v) {
-			Log.i("DiscoveryRallye","POIDialog::onClickPOIDelete()");
 			
-			// TODO Implement me
+			// Delete the POI from the POIContainer
+			poic.removePOI(poic.getPOI(poiID).getDescription(), poiID);
 			
 			// Close the Dialog
 			cancel();
+			
+			// Refresh the user interface
+			uiPOIList.uiRefresh();
 		}
-	}
-
-	// TODO Maybe not necessary
-	private class OnClose implements OnCancelListener{
-		@Override
-		public void onCancel(DialogInterface dialog) {
-			Log.i("DiscoveryRallye","POIDialog::onCancel(DialogInterface dialog)");
-		}
-	}
-	
-	
+	}	
 }
