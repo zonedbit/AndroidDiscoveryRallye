@@ -11,51 +11,61 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 public class POIList extends ListActivity 
-{
-	private static ArrayList<POI> pois = new ArrayList<POI>();
-	private static ArrayList<String> poisDesription = new ArrayList<String>();
-	
-	protected void onCreate(Bundle savedInstanceState) 
-	{
+					 implements IUIRefreshable, IOverlayRouteable {
+	private POIContainer poic;
+
+	/**
+	 * Create this activity
+	 */
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		//TODO: Test
-		addListItem(new POI(51.494995, 7.419649, "FB4" ));
-		
-		setListAdapter((ListAdapter)  new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, poisDesription));
+
+		poic = POIContainer.getInstance(getBaseContext());
+		this.uiRefresh();
 	}
 	
+
+	
+
 	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id) 
-	{
-		POI poi = pois.get(position);
+	protected void onListItemClick(ListView l, View v, int position, long id) {
 		
-		addRouteOverlay(poi);
+		/* Create the custom dialog*/		
+		POIDialog dlg = new POIDialog(this, this, this, position);
+		dlg.show();
+		
+//		long result = poic.addPOI(new POI(51.493670, 7.420191, "Fake " +position ));
+//		if ( result <= 0){
+//			Toast.makeText(this, "POI bereits vorhanden", Toast.LENGTH_SHORT)
+//				.show();
+//		}
 	}
-	
-	//TODO: Dieses statische Rumgeschiebe könnte man durch die Datenbank umgehen
-	//Dann braucht diese Methode so nicht mehr.
-	public static void addListItem(POI poi)
-	{
-			poisDesription.add(poi.getDescription());
-			pois.add(poi);
-	}
-	
+
 	@SuppressWarnings("unchecked")
-	private void addRouteOverlay(POI destination)
-    {
+	public void addRouteOverlay(POI destination) {
 		JSONRequest jsonRequest = new JSONRequest(this);
-		 
+
 		ArrayList<POI> pois = new ArrayList<POI>();
-		
+
 		Location retrievedLocation = GeoUtils.retrieveLocation(this);
-		POI myLocation = new POI(retrievedLocation.getLatitude(), retrievedLocation.getLongitude(), "My Location");
-		
+		POI myLocation = new POI(retrievedLocation.getLatitude(),
+				retrievedLocation.getLongitude(), "My Location");
+
 		pois.add(myLocation);
 		pois.add(destination);
-		 
+
 		jsonRequest.execute(pois);
 	}
-	
-	
+
+	/**
+	 * Create the UI-List. After adding a POI or several POI to 
+	 * the POICOntainer call this method to refresh the UI
+	 * 
+	 * @see POI
+	 * @see POIContainer
+	 */
+	public void uiRefresh() {
+		setListAdapter((ListAdapter) new ArrayAdapter<String>(this,
+				R.layout.poi_row, poic.getAllPOIsName()));
+	}
 }
