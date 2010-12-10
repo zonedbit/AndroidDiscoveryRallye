@@ -171,6 +171,6 @@ public class CampusOSM extends Activity {
     {
     	addItem(new GeoPoint(poi.getLat(), poi.getLon()), poi.getDescription());
     	//TODO: Hier muss der POI in der Datenbank gespeichert werden.
-    	POIList.addListItem(poi);
+    	//POIList.addListItem(poi);
     }
 }

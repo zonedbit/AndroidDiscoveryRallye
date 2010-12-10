@@ -48,12 +48,6 @@ public class DiscoveryRallye extends TabActivity {
         	
         }
         
-      
-        
-       
-        
-        
-        
-        mTabHost.setCurrentTab(0);
+        mTabHost.setCurrentTab(1);
     }
 }
