@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import android.app.ListActivity;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
@@ -35,19 +34,11 @@ public class POIList extends ListActivity
 		POIDialog dlg = new POIDialog(this, this, this, position);
 		dlg.show();
 		
-//		POI poi = poic.getPOI(position);
-		
 //		long result = poic.addPOI(new POI(51.493670, 7.420191, "Fake " +position ));
 //		if ( result <= 0){
 //			Toast.makeText(this, "POI bereits vorhanden", Toast.LENGTH_SHORT)
 //				.show();
 //		}
-		
-//		poic.removePOI(poi.getDescription(), id);
-//		fillList(); // refresh the view
-
-		// TODO remove comment
-		// addRouteOverlay(poi);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -75,8 +66,6 @@ public class POIList extends ListActivity
 	 */
 	@Override
 	public void uiRefresh() {
-		
-		// TODO Ensure that poic isn't null
 		setListAdapter((ListAdapter) new ArrayAdapter<String>(this,
 				R.layout.poi_row, poic.getAllPOIsName()));
 	}

@@ -3,6 +3,18 @@
 				android:layout_height="fill_parent" 
 				xmlns:android="http://schemas.android.com/apk/res/android">
 				
+				<TableRow	android:id="@+id/poiDialogTableRow00" 
+							android:layout_width="wrap_content" 
+							android:layout_height="wrap_content" >
+					<TextView	android:textSize="15sp"
+								android:textColor="#F00"
+								android:paddingLeft="10sp"
+							  	android:id="@+id/poiDialogError" 
+							  	android:layout_width="wrap_content" 
+							  	android:layout_height="wrap_content" />
+
+				</TableRow>
+				
 				<TableRow	android:id="@+id/poiDialogTableRow01" 
 							android:layout_width="wrap_content" 
 							android:layout_height="wrap_content" >
@@ -13,14 +25,15 @@
 							  	android:layout_width="wrap_content" 
 							  	android:layout_height="wrap_content" />
 				</TableRow>
-
+			 
 			 	<TableRow	android:id="@+id/poiDialogTableRow02" 
 			 				android:layout_width="wrap_content" 
 			 				android:layout_height="wrap_content">
 			 				<EditText	android:text="@string/poiDialogEditText" 
 			 							android:id="@+id/poiDialogEditText" 
 			 							android:layout_width="wrap_content" 
-			 							android:layout_height="wrap_content"/>
+			 							android:layout_height="wrap_content"
+			 							android:singleLine="true"/>
 							<Button	android:text="@string/poiDialogButtonRename" 
 									android:id="@+id/poiDialogButtonRename" 
 									android:layout_width="wrap_content" 

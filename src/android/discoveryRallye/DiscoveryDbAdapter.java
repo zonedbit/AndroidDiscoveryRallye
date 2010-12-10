@@ -3,6 +3,7 @@ package android.discoveryRallye;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -114,12 +115,21 @@ public class DiscoveryDbAdapter implements IDBPOI{
      * @return The number of affected rows, should be one; otherwise a
      * 		   error is occurred.
      */
-    public int renamePOI(String oldName, String newName){
+    public int renamePOI(String oldName, String newName) 
+    											throws SQLiteConstraintException{
     	ContentValues val = new ContentValues();
     	val.put(ATTR_NAME, newName);
-
-    	return 
+    	int res = -4;
+    	try{
+    	 res = 
     		sldb.update(DB_TABLE_POIS, val, ATTR_NAME + "=" + "'"+oldName+"'", null);
+    	}catch (SQLiteConstraintException e) {
+			throw new SQLiteConstraintException("POI-Name vergeben");
+		}
+    	Log.i("Rename", "Affected Rows:" + res);
+    	
+    	return 
+    		res; 
     }
     
     /**

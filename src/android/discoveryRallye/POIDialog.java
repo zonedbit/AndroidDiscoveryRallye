@@ -2,11 +2,16 @@ package android.discoveryRallye;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.database.sqlite.SQLiteConstraintException;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TableRow;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class POIDialog extends Dialog {
 
@@ -83,14 +88,24 @@ public class POIDialog extends Dialog {
 			String newName = ((EditText)findViewById(R.id.poiDialogEditText))
 								.getText().toString(); 
 				
-			// Update the Point in the POIContainer
-			poic.renamePOI(poiID, newName);
+			/* Update the POI in the POIContainer and database
+			 * only if the new name different form current name
+			 */
+			try{
+				if ( !poic.getPOI(poiID).getDescription().equals(newName)){
+						poic.renamePOI(poiID, newName);
+						// Refresh the user interface
+						uiPOIList.uiRefresh();
+				}
+				
+				// Close the Dialog
+				cancel();
+			}catch (SQLiteConstraintException e) {
+				// Setting the error message
+				((TextView)findViewById(R.id.poiDialogError))
+						.setText(e.getMessage());
+			}
 			
-			// Close the Dialog
-			cancel();
-			
-			// Refresh the user interface
-			uiPOIList.uiRefresh();
 		}
 	}
 	
@@ -98,7 +113,6 @@ public class POIDialog extends Dialog {
 		public void onClick(View v) {
 			Log.i("DiscoveryRallye","POIDialog::onClickPOIGoTo()");
 			
-			// TODO Implement me
 			POI destination = poic.getPOI(poiID);
 			route.addRouteOverlay(destination);
 			
