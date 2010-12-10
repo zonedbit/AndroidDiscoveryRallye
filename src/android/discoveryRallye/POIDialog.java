@@ -14,6 +14,7 @@ public class POIDialog extends Dialog {
 	private Context ctx;
 	POIContainer poic;
 	IUIRefreshable uiPOIList;
+	IOverlayRouteable route;
 	
 	/**
 	 * Constructor to create the Dialog. This dialog isn't
@@ -23,16 +24,19 @@ public class POIDialog extends Dialog {
 	 * implements the IUIRefreshable interface
 	 * 
 	 * @param ctx   The Dialog Environment
-	 * @param ui    Interface for the callback method 
+	 * @param ui    Interface for the callback method to refresh the UI
+	 * @param route Interface for the callback method to add the route overlay
 	 * @param poiID The position index of the POI in the list
 	 * @see IUIRefreshable
 	 */
-	public POIDialog(Context ctx, IUIRefreshable ui, int poiID ){
+	public POIDialog(Context ctx, IUIRefreshable ui, 
+					 IOverlayRouteable route, int poiID ){
 		super(ctx);
 		this.ctx     = ctx;
 		this.poiID 	 = poiID;
 		this.poic    = POIContainer.getInstance(ctx);
 		this.uiPOIList = ui;
+		this.route	   = route;
 	}
 
 	/* (non-Javadoc)
@@ -95,12 +99,11 @@ public class POIDialog extends Dialog {
 			Log.i("DiscoveryRallye","POIDialog::onClickPOIGoTo()");
 			
 			// TODO Implement me
+			POI destination = poic.getPOI(poiID);
+			route.addRouteOverlay(destination);
 			
 			// Close the Dialog
 			cancel();
-			
-			// Refresh the user interface
-			uiPOIList.uiRefresh();
 		}
 	}
 	

@@ -11,7 +11,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-public class POIList extends ListActivity implements IUIRefreshable {
+public class POIList extends ListActivity 
+					 implements IUIRefreshable, IOverlayRouteable {
 	private POIContainer poic;
 
 	/**
@@ -31,7 +32,7 @@ public class POIList extends ListActivity implements IUIRefreshable {
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		
 		/* Create the custom dialog*/		
-		POIDialog dlg = new POIDialog(this, this, position);
+		POIDialog dlg = new POIDialog(this, this, this, position);
 		dlg.show();
 		
 //		POI poi = poic.getPOI(position);
@@ -50,7 +51,7 @@ public class POIList extends ListActivity implements IUIRefreshable {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void addRouteOverlay(POI destination) {
+	public void addRouteOverlay(POI destination) {
 		JSONRequest jsonRequest = new JSONRequest(this);
 
 		ArrayList<POI> pois = new ArrayList<POI>();
