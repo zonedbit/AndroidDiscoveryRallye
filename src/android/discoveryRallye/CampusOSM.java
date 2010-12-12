@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -21,16 +22,35 @@ import android.widget.RelativeLayout.LayoutParams;
 
 public class CampusOSM extends Activity {
 
-	private OpenStreetMapView openStreetMapView;
+	private static final String TAG = CampusOSM.class.getName();
+	private static OpenStreetMapView openStreetMapView;
 	private OpenStreetMapViewItemizedOverlayWithFocus<OpenStreetMapViewOverlayItem> itemizedOverlay;
 	private ResourceProxy mResourceProxy;
 	
 	//Emil-Figge Straße 42
 	GeoPoint fb4 = new GeoPoint(51494995, 7419649);
 	
+	private static ArrayList<GeoPoint> geopoints = new ArrayList<GeoPoint>();
+	
 	private RelativeLayout relativeLayout;
-	private ArrayList<OpenStreetMapViewOverlayItem> items = new ArrayList<OpenStreetMapViewOverlayItem>();
+	private static ArrayList<OpenStreetMapViewOverlayItem> items = new ArrayList<OpenStreetMapViewOverlayItem>();
 	private MyLocationOverlay myLocationOverlay;
+	private POI destination;
+	
+	public static ArrayList<OpenStreetMapViewOverlayItem> getItems()
+	{
+		return items;
+	}
+	
+	public static ArrayList<GeoPoint> getGeoPoints()
+	{
+		return geopoints;
+	}
+	
+	public static OpenStreetMapView getOpenStreetMapView()
+	{
+		return openStreetMapView;
+	}
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,13 +59,18 @@ public class CampusOSM extends Activity {
         openStreetMapView = new OpenStreetMapView(this);
         this.mResourceProxy = new ResourceProxyImpl(getApplicationContext());
         
-        //ein Item  muss mindestens dabei, sonst kommt der ItemizedOverlay nicht klar
-    	OpenStreetMapViewOverlayItem openStreetMapViewOverlayItem = new OpenStreetMapViewOverlayItem("Dortmund", "Fachbereich 4 - Informatik", fb4);
-    	items.add(openStreetMapViewOverlayItem);
-        	
+    	POIContainer poiContainer = POIContainer.getInstance(getBaseContext());
+    	ArrayList<POI> allPOIs = poiContainer.getALLPOIs();
+    	
+    	//initiales Füllen der Karte mit Items
+    	for (POI poi : allPOIs) {
+    		OpenStreetMapViewOverlayItem openStreetMapViewOverlayItem = new OpenStreetMapViewOverlayItem(poi.getDescription(), poi.getDescription(), new GeoPoint(poi.getLat(), poi.getLon()));
+			items.add(openStreetMapViewOverlayItem);
+		}
+    	
         createLayout();
-        addItemizedOverlay();
         addMyLocationOverlay();
+        addItemizedOverlay();
         setInitialView();
         setPreferences();
         
@@ -56,24 +81,25 @@ public class CampusOSM extends Activity {
         //Die Karte wird mit einem neuen POI aufgerufen. Dabei soll die Route gezeichnet werden
         if(bundle != null)
         {
-        	@SuppressWarnings("unchecked")
-			ArrayList<GeoPoint> geoPoints = (ArrayList<GeoPoint>) bundle.get("poi");
-        	RouteOverlay routeOverlay = new RouteOverlay(geoPoints, openStreetMapView, this);
+			geopoints = (ArrayList<GeoPoint>) bundle.get("pois");
+        	destination =  (POI) bundle.get("destination");
+        	RouteOverlay routeOverlay = new RouteOverlay(geopoints, openStreetMapView, this);
 			openStreetMapView.getOverlays().add(routeOverlay);
         }
     }
     
     
     private void addMyLocationOverlay() {
-	        this.myLocationOverlay = new MyLocationOverlay(this.getBaseContext(), openStreetMapView, mResourceProxy);
+    	
+	        myLocationOverlay = new MyLocationOverlay(this.getBaseContext(), openStreetMapView, mResourceProxy);
 	        
 	        //dadurch folgt die Map der Position
 	        myLocationOverlay.followLocation(true);
 	        
 	        //Batterie sparen
-	        myLocationOverlay.setLocationUpdateMinDistance(100);
-	        myLocationOverlay.setLocationUpdateMinTime(6000);
-	        openStreetMapView.getOverlays().add(this.myLocationOverlay);
+	        myLocationOverlay.setLocationUpdateMinDistance(50);
+	        myLocationOverlay.setLocationUpdateMinTime(1000);
+	        openStreetMapView.getOverlays().add(myLocationOverlay);
 	}
     
     @Override
@@ -86,24 +112,23 @@ public class CampusOSM extends Activity {
     
     @Override
     protected void onResume() {
-    	this.myLocationOverlay.enableMyLocation();
+    	myLocationOverlay.enableMyLocation();
     	super.onResume();
     }
 
 	private void addItemizedOverlay() 
     {
 	        this.itemizedOverlay = new OpenStreetMapViewItemizedOverlayWithFocus<OpenStreetMapViewOverlayItem>(this, items, new ItemGestureListener<OpenStreetMapViewOverlayItem>(), mResourceProxy);
-	        this.itemizedOverlay.setFocusItemsOnTap(true);
-	        this.itemizedOverlay.setFocusedItem(0); //TODO: Dadurch zoomt er erst zur FH und dann zur später zur eigenen Position -> Gewollt?
+	        this.itemizedOverlay.setFocusItemsOnTap(false);
+	        //this.itemizedOverlay.setFocusedItem(0); //TODO: Dadurch zoomt er erst zur FH und dann zur später zur eigenen Position -> Gewollt?
 	        openStreetMapView.getOverlays().add(this.itemizedOverlay);
 	}
     
-    public void addItem(GeoPoint geoPoint, String description)
+    public void addItem(double latitude, double longitude)
     {
-    	//TODO: Long- und Shortdescription benutzen?
-    	OpenStreetMapViewOverlayItem openStreetMapViewOverlayItem = new OpenStreetMapViewOverlayItem(description, description, geoPoint);
-    	items.add(openStreetMapViewOverlayItem);
-    	openStreetMapView.invalidate(); //neu zeichnen
+    	Log.d(TAG, "");
+    	NewPOIDialog dlg = new NewPOIDialog(this, latitude, longitude, items, openStreetMapView);
+		dlg.show();
     }
     
     @Override
@@ -128,14 +153,21 @@ public class CampusOSM extends Activity {
         this.setContentView(relativeLayout);
     }
     
-    /*
-     * Die Karten wird auf den Fachbereich 4 zentriert und es wird rangezoomt
-     */
     public void setInitialView()
     {
     	openStreetMapView.getController().setZoom(16);
-    	openStreetMapView.getController().setCenter(fb4);
+    	
+    	if(myLocationOverlay.getMyLocation() != null)
+    	{
+    		openStreetMapView.getController().setCenter(myLocationOverlay.getMyLocation());
+    	}
+    	else
+    	{
+    		Location retrieveLastKnownLocation = GeoUtils.retrieveLastKnownLocation(this);
+    		openStreetMapView.getController().setCenter(GeoUtils.createGeoPoint(retrieveLastKnownLocation));
+    	}
     	openStreetMapView.invalidate();
+    	
     }
     
     @Override
@@ -143,34 +175,34 @@ public class CampusOSM extends Activity {
     {
     	menu.add(0, 1, Menu.FIRST, "Zeige Standort");
     	menu.add(0, 2, Menu.NONE, "Speichere aktuelle Location");
+    	menu.add(0, 3, Menu.NONE, "Zeichne die Route neu");
 		return true;
     }
     
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) 
     {
+    	GeoPoint userLocation = myLocationOverlay.getMyLocation();
+    	
     	switch (item.getItemId()) {
 		case 1:
-			Location retrieveLocation = GeoUtils.retrieveLocation(this);
-			GeoPoint geoPoint = new GeoPoint(retrieveLocation.getLatitude(), retrieveLocation.getLongitude());
-			openStreetMapView.getController().setCenter(geoPoint);
-			return true;
-		case 2:
-			Location retrievedLocation = GeoUtils.retrieveLocation(this);
-			//TODO: Das muss noch mit einer Beschreibung gefüllt werden -> Da muss ein Dialog her
-			//TODO: In der Datenbank speichern
-			POI poi = new POI(retrievedLocation.getLatitude(), retrievedLocation.getLongitude(), "My Location");
-			distributePOI(poi);
+			if(userLocation != null)
+			{
+				openStreetMapView.getController().setCenter(myLocationOverlay.getMyLocation());
+				return true;
+			}
 			
+		case 2:
+			if(userLocation != null)
+			{
+				addItem(userLocation.getLatitudeE6() / 1E6, userLocation.getLongitudeE6() / 1E6);
+			}
+			return true;
+		case 3:
+			JSONRequest jsonRequest = new JSONRequest(this, destination);
+			jsonRequest.calculateRoute();
 			return true;
 		}
 		return false;
-    }
-    
-    private void distributePOI(POI poi)
-    {
-    	addItem(new GeoPoint(poi.getLat(), poi.getLon()), poi.getDescription());
-    	//TODO: Hier muss der POI in der Datenbank gespeichert werden.
-    	//POIList.addListItem(poi);
     }
 }

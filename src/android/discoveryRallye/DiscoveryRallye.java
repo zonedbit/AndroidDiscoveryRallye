@@ -29,6 +29,8 @@ public class DiscoveryRallye extends TabActivity {
                 mTabHost.addTab(mTabHost.newTabSpec("tabMap")
                 		.setIndicator(getString(R.string.nameTabMap))
                 		.setContent(intentToMap));
+                
+                mTabHost.setCurrentTab(0);
         	}
         	else
         	{
@@ -46,8 +48,10 @@ public class DiscoveryRallye extends TabActivity {
         			.setIndicator(getString(R.string.nameTabNote))
         			.setContent(new Intent(this, Note.class) ));
         	
+        	if(bundle == null)
+        	{
+        		mTabHost.setCurrentTab(0);
+        	}
         }
-        
-        mTabHost.setCurrentTab(1);
     }
 }

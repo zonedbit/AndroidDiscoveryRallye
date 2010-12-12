@@ -1,6 +1,6 @@
 package android.discoveryRallye;
 
-import java.util.ArrayList;
+import org.andnav.osm.util.GeoPoint;
 
 import android.app.ListActivity;
 import android.location.Location;
@@ -17,7 +17,8 @@ public class POIList extends ListActivity
 	/**
 	 * Create this activity
 	 */
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) 
+	{
 		super.onCreate(savedInstanceState);
 
 		poic = POIContainer.getInstance(getBaseContext());
@@ -41,20 +42,11 @@ public class POIList extends ListActivity
 //		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public void addRouteOverlay(POI destination) {
-		JSONRequest jsonRequest = new JSONRequest(this);
-
-		ArrayList<POI> pois = new ArrayList<POI>();
-
-		Location retrievedLocation = GeoUtils.retrieveLocation(this);
-		POI myLocation = new POI(retrievedLocation.getLatitude(),
-				retrievedLocation.getLongitude(), "My Location");
-
-		pois.add(myLocation);
-		pois.add(destination);
-
-		jsonRequest.execute(pois);
+	public void addRouteOverlay(POI destination) 
+	{
+		GeoUtils.activateLocationListener(this);
+		JSONRequest jsonRequest = new JSONRequest(this, destination);
+		jsonRequest.calculateRoute();
 	}
 
 	/**
@@ -65,7 +57,6 @@ public class POIList extends ListActivity
 	 * @see POIContainer
 	 */
 	public void uiRefresh() {
-		setListAdapter((ListAdapter) new ArrayAdapter<String>(this,
-				R.layout.poi_row, poic.getAllPOIsName()));
+		setListAdapter((ListAdapter) new ArrayAdapter<String>(this,R.layout.poi_row, poic.getAllPOIsName()));
 	}
 }

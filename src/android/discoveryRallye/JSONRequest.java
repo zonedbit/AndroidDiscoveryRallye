@@ -22,8 +22,10 @@ import android.app.AlertDialog.Builder;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.EventLogTags.Description;
 import android.util.Log;
 
 
@@ -43,11 +45,13 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 	private static final String FOOT = "foot";
 	private static final Object MAPNIK = "mapnik";
 	private ProgressDialog dialog;
-	private Activity listActivity;
+	private Activity activity;
+	private POI destination;
 	
-	public JSONRequest(Activity listActivity)
+	public JSONRequest(Activity activity, POI destination)
 	{
-		this.listActivity = listActivity;
+		this.activity = activity;
+		this.destination = destination;
 	}
 	
 	/*
@@ -113,8 +117,8 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 	@Override
 	protected void onPreExecute() 
 	{
-		dialog = new ProgressDialog(listActivity);
-		dialog.setMessage("Laden der Route");
+		dialog = new ProgressDialog(activity);
+		dialog.setMessage("Laden der Route...");
 		dialog.show();
 	}
 
@@ -160,7 +164,7 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 			}
 			else
 			{
-				Builder builder = new Builder(listActivity);
+				Builder builder = new Builder(activity);
 				builder.setTitle("Probleme beim Laden der Route");
 				builder.setMessage("Routeninformationen konnten nicht heruntergeladen werden - Service nicht erreichbar?");
 				builder.setCancelable(false);
@@ -185,6 +189,7 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 		}
 		
 		Log.d(JSONRequest.class.getName(), "Abfrage des Webservices abgeschlossen");
+		
 		return geoPoints;
 	}
 	
@@ -193,16 +198,56 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 	{
 		if(result.size() > 0)
 		{
-			Intent intent = new Intent(listActivity, DiscoveryRallye.class);
+			Intent intent = new Intent(activity, DiscoveryRallye.class);
 			Bundle bundle = new Bundle();
 			
-			bundle.putParcelableArrayList("poi", result);
+			bundle.putParcelableArrayList("pois", result);
+			bundle.putSerializable("destination", destination);
 			intent.putExtras(bundle);
 			dialog.dismiss();
-			listActivity.startActivity(intent);
-			listActivity.finish();
+			
+			//sonst ist es die Route, die auf der Karte neu gezeichnet wird
+			if(activity instanceof POIList)
+			{
+				activity.startActivity(intent);
+				activity.finish();
+			}
+			else if(activity instanceof CampusOSM)
+			{
+				CampusOSM.getGeoPoints().clear();
+				CampusOSM.getGeoPoints().addAll(result);
+				CampusOSM.getOpenStreetMapView().invalidate();
+			}
+			
 		}
 		
 	}
-	
+
+	@SuppressWarnings("unchecked")
+	public void calculateRoute() {
+		
+		if(destination != null)
+		{
+			ArrayList<POI> pois = new ArrayList<POI>();
+			
+			POI myLocation = null;
+			
+			Location userLocation = GeoUtils.getLocation();
+			
+			if(userLocation != null)
+			{
+				myLocation  = new POI(userLocation.getLatitude(), userLocation.getLongitude(), "My Location");
+			}
+			else
+			{
+				Location retrievedLocation = GeoUtils.retrieveLastKnownLocation(activity);
+				myLocation = new POI(retrievedLocation.getLatitude(), retrievedLocation.getLongitude(), "My Location");
+			}
+			
+			pois.add(myLocation);
+			pois.add(destination);
+			
+			this.execute(pois);
+		}
+	}
 }

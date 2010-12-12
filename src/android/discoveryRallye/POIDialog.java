@@ -1,22 +1,24 @@
 package android.discoveryRallye;
 
+import java.util.ArrayList;
+
+import org.andnav.osm.views.overlay.OpenStreetMapViewOverlayItem;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.database.sqlite.SQLiteConstraintException;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class POIDialog extends Dialog {
 
+	public static final String TAG = POIDialog.class.getName();
 	private int    	poiID;
-	private Context ctx;
+	private Context context;
 	POIContainer poic;
 	IUIRefreshable uiPOIList;
 	IOverlayRouteable route;
@@ -37,7 +39,7 @@ public class POIDialog extends Dialog {
 	public POIDialog(Context ctx, IUIRefreshable ui, 
 					 IOverlayRouteable route, int poiID ){
 		super(ctx);
-		this.ctx     = ctx;
+		this.context     = ctx;
 		this.poiID 	 = poiID;
 		this.poic    = POIContainer.getInstance(ctx);
 		this.uiPOIList = ui;
@@ -59,7 +61,7 @@ public class POIDialog extends Dialog {
 		}
 		
 		/* Set the title of the dialog box */
-		String title = ctx.getString(R.string.poiDialogTitle);
+		String title = context.getString(R.string.poiDialogTitle);
 		setTitle(title + " " + poiName );
 		
 		/* Set the text of the edit field */
@@ -124,14 +126,33 @@ public class POIDialog extends Dialog {
 	private class OnClickPOIDelete implements android.view.View.OnClickListener{
 		public void onClick(View v) {
 			
+			POI poi = poic.getPOI(poiID);
+			
 			// Delete the POI from the POIContainer
-			poic.removePOI(poic.getPOI(poiID).getDescription(), poiID);
+			poic.removePOI(poi.getDescription(), poiID);
 			
 			// Close the Dialog
 			cancel();
 			
 			// Refresh the user interface
 			uiPOIList.uiRefresh();
+			
+			//Items holen und das entsprechende Item löschen
+			OpenStreetMapViewOverlayItem openStreetMapViewOverlayItem = null;
+			ArrayList<OpenStreetMapViewOverlayItem> items = CampusOSM.getItems();
+			
+			for (OpenStreetMapViewOverlayItem viewOverlayItem : items) {
+				if(viewOverlayItem.getTitle().equals(poi.getDescription()))
+				{
+					openStreetMapViewOverlayItem = viewOverlayItem;
+				}
+			}
+			
+			CampusOSM.getItems().remove(openStreetMapViewOverlayItem);
+			
+			//und neu zeichnen
+			CampusOSM.getOpenStreetMapView().invalidate();
+			
 		}
 	}	
 }
