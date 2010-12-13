@@ -164,7 +164,11 @@ public class CampusOSM extends Activity {
     	else
     	{
     		Location retrieveLastKnownLocation = GeoUtils.retrieveLastKnownLocation(this);
-    		openStreetMapView.getController().setCenter(GeoUtils.createGeoPoint(retrieveLastKnownLocation));
+    		
+    		// TODO Bugfix It is necessary to use a default value
+    		if(retrieveLastKnownLocation != null ){
+    			openStreetMapView.getController().setCenter(GeoUtils.createGeoPoint(retrieveLastKnownLocation));
+    		}
     	}
     	openStreetMapView.invalidate();
     	
