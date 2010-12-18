@@ -8,6 +8,7 @@ import org.andnav.osm.views.OpenStreetMapView;
 import org.andnav.osm.views.overlay.MyLocationOverlay;
 import org.andnav.osm.views.overlay.OpenStreetMapViewItemizedOverlayWithFocus;
 import org.andnav.osm.views.overlay.OpenStreetMapViewOverlayItem;
+import org.andnav.osm.views.overlay.ScaleBarOverlay;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -34,8 +35,9 @@ public class CampusOSM extends Activity {
 	
 	private RelativeLayout relativeLayout;
 	private static ArrayList<OpenStreetMapViewOverlayItem> items = new ArrayList<OpenStreetMapViewOverlayItem>();
-	private MyLocationOverlay myLocationOverlay;
+	private static MyLocationOverlay myLocationOverlay;
 	private POI destination;
+	private ScaleBarOverlay mScaleBarOverlay;
 	
 	public static ArrayList<OpenStreetMapViewOverlayItem> getItems()
 	{
@@ -50,6 +52,11 @@ public class CampusOSM extends Activity {
 	public static OpenStreetMapView getOpenStreetMapView()
 	{
 		return openStreetMapView;
+	}
+	
+	public static MyLocationOverlay getMyLocationOverlay()
+	{
+		return myLocationOverlay;
 	}
 	
     @Override
@@ -71,6 +78,7 @@ public class CampusOSM extends Activity {
         createLayout();
         addMyLocationOverlay();
         addItemizedOverlay();
+        addScaleBar();
         setInitialView();
         setPreferences();
         
@@ -89,17 +97,28 @@ public class CampusOSM extends Activity {
     }
     
     
-    private void addMyLocationOverlay() {
+    private void addScaleBar() {
+    	this.mScaleBarOverlay = new ScaleBarOverlay(this, mResourceProxy);
+    	CampusOSM.openStreetMapView.getOverlays().add(mScaleBarOverlay);
+    	this.mScaleBarOverlay.setScaleBarOffset(mScaleBarOverlay.screenWidth/2 - mScaleBarOverlay.xdpi/2, 10);
+    	this.mScaleBarOverlay.setImperial();
+	}
+
+	private void addMyLocationOverlay() {
     	
 	        myLocationOverlay = new MyLocationOverlay(this.getBaseContext(), openStreetMapView, mResourceProxy);
 	        
 	        //dadurch folgt die Map der Position
 	        myLocationOverlay.followLocation(true);
 	        
+	        //und ein Kompass soll her
+	        myLocationOverlay.enableCompass();
+	        
 	        //Batterie sparen
 	        myLocationOverlay.setLocationUpdateMinDistance(50);
 	        myLocationOverlay.setLocationUpdateMinTime(1000);
 	        openStreetMapView.getOverlays().add(myLocationOverlay);
+	        
 	}
     
     @Override
@@ -161,11 +180,11 @@ public class CampusOSM extends Activity {
     	{
     		openStreetMapView.getController().setCenter(myLocationOverlay.getMyLocation());
     	}
-    	else
-    	{
-    		Location retrieveLastKnownLocation = GeoUtils.retrieveLastKnownLocation(this);
-    		openStreetMapView.getController().setCenter(GeoUtils.createGeoPoint(retrieveLastKnownLocation));
-    	}
+//    	else
+//    	{
+//    		Location retrieveLastKnownLocation = GeoUtils.retrieveLastKnownLocation(this);
+//    		openStreetMapView.getController().setCenter(GeoUtils.createGeoPoint(retrieveLastKnownLocation));
+//    	}
     	openStreetMapView.invalidate();
     	
     }

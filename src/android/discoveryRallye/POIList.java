@@ -44,7 +44,7 @@ public class POIList extends ListActivity
 
 	public void addRouteOverlay(POI destination) 
 	{
-		GeoUtils.activateLocationListener(this);
+		//GeoUtils.activateLocationListener(this);
 		JSONRequest jsonRequest = new JSONRequest(this, destination);
 		jsonRequest.calculateRoute();
 	}

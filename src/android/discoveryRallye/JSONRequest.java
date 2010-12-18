@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+import org.andnav.osm.contributor.util.Util;
 import org.andnav.osm.util.GeoPoint;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -232,17 +233,22 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 			
 			POI myLocation = null;
 			
-			Location userLocation = GeoUtils.getLocation();
+			GeoPoint geoPoint = CampusOSM.getMyLocationOverlay().getMyLocation();
+			
+			Location userLocation = new Location("my Location");
+			
+			userLocation.setLatitude(geoPoint.getLatitudeE6() / 1E6);
+			userLocation.setLongitude(geoPoint.getLongitudeE6() / 1E6);
 			
 			if(userLocation != null)
 			{
 				myLocation  = new POI(userLocation.getLatitude(), userLocation.getLongitude(), "My Location");
 			}
-			else
-			{
-				Location retrievedLocation = GeoUtils.retrieveLastKnownLocation(activity);
-				myLocation = new POI(retrievedLocation.getLatitude(), retrievedLocation.getLongitude(), "My Location");
-			}
+//			else
+//			{
+//				Location retrievedLocation = GeoUtils.retrieveLastKnownLocation(activity);
+//				myLocation = new POI(retrievedLocation.getLatitude(), retrievedLocation.getLongitude(), "My Location");
+//			}
 			
 			pois.add(myLocation);
 			pois.add(destination);
