@@ -146,20 +146,40 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 					
 					String content = getContent(entity);
 					
-					JSONObject jsonObject = new JSONObject(content);
-					
-					JSONArray jsonArray = jsonObject.getJSONArray("coordinates");
-					
-					for (int i = 0; i < jsonArray.length() - 1; i++) 
+					if(content.contains("busy"))
 					{
-						JSONArray jsonGeoPoint = jsonArray.getJSONArray(i);
+						JSONObject jsonObject = new JSONObject(content);
 						
-						double lon = (Double) jsonGeoPoint.get(0);
-						double lat = (Double) jsonGeoPoint.get(1);
+						JSONArray jsonArray = jsonObject.getJSONArray("coordinates");
 						
-						GeoPoint geoPoint = new GeoPoint(lat, lon);
+						for (int i = 0; i < jsonArray.length() - 1; i++) 
+						{
+							JSONArray jsonGeoPoint = jsonArray.getJSONArray(i);
+							
+							double lon = (Double) jsonGeoPoint.get(0);
+							double lat = (Double) jsonGeoPoint.get(1);
+							
+							GeoPoint geoPoint = new GeoPoint(lat, lon);
+							
+							geoPoints.add(geoPoint);
+						}
+					}
+					else
+					{
+						Builder builder = new Builder(activity);
+						builder.setTitle("Probleme beim Laden der Route");
+						builder.setMessage("Routeninformationen konnten nicht heruntergeladen werden - Der Service ist beschäftigt...");
+						builder.setCancelable(false);
+						builder.setPositiveButton("OK", new DialogInterface.OnClickListener() 
+						{
+							public void onClick(DialogInterface dialog, int which) 
+							{
+								dialog.cancel();
+							}
+						});
 						
-						geoPoints.add(geoPoint);
+						builder.create();
+						builder.show();
 					}
 				}
 			}
@@ -205,7 +225,6 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 			bundle.putParcelableArrayList("pois", result);
 			bundle.putSerializable("destination", destination);
 			intent.putExtras(bundle);
-			dialog.dismiss();
 			
 			//sonst ist es die Route, die auf der Karte neu gezeichnet wird
 			if(activity instanceof POIList)
@@ -221,7 +240,7 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 			}
 			
 		}
-		
+		dialog.dismiss();
 	}
 
 	@SuppressWarnings("unchecked")
