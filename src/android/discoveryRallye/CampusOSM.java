@@ -37,7 +37,7 @@ public class CampusOSM extends Activity {
 	private static ArrayList<OpenStreetMapViewOverlayItem> items = new ArrayList<OpenStreetMapViewOverlayItem>();
 	private static MyLocationOverlay myLocationOverlay;
 	private POI destination;
-	private ScaleBarOverlay mScaleBarOverlay;
+	private ScaleBarOverlay scaleBarOverlay;
 	
 	public static ArrayList<OpenStreetMapViewOverlayItem> getItems()
 	{
@@ -98,10 +98,10 @@ public class CampusOSM extends Activity {
     
     
     private void addScaleBar() {
-    	this.mScaleBarOverlay = new ScaleBarOverlay(this, mResourceProxy);
-    	CampusOSM.openStreetMapView.getOverlays().add(mScaleBarOverlay);
-    	this.mScaleBarOverlay.setScaleBarOffset(mScaleBarOverlay.screenWidth/2 - mScaleBarOverlay.xdpi/2, 10);
-    	this.mScaleBarOverlay.setImperial();
+    	this.scaleBarOverlay = new ScaleBarOverlay(this, mResourceProxy);
+    	CampusOSM.openStreetMapView.getOverlays().add(scaleBarOverlay);
+    	this.scaleBarOverlay.setScaleBarOffset(scaleBarOverlay.screenWidth/2 - scaleBarOverlay.xdpi/2, 10);
+    	this.scaleBarOverlay.setImperial();
 	}
 
 	private void addMyLocationOverlay() {
@@ -125,7 +125,6 @@ public class CampusOSM extends Activity {
     protected void onPause() {
     	//Batterie sparen
     	myLocationOverlay.disableMyLocation();
-    	
     	super.onPause();
     }
     
@@ -148,12 +147,6 @@ public class CampusOSM extends Activity {
     	Log.d(TAG, "");
     	NewPOIDialog dlg = new NewPOIDialog(this, latitude, longitude, items, openStreetMapView);
 		dlg.show();
-    }
-    
-    @Override
-    public boolean onTouchEvent(MotionEvent event) 
-    {
-    	return super.onTouchEvent(event);
     }
     
 	private void setPreferences() 

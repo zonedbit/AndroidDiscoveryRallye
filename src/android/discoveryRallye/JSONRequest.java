@@ -146,7 +146,7 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 					
 					String content = getContent(entity);
 					
-					if(content.contains("busy"))
+					if(!content.contains("busy"))
 					{
 						JSONObject jsonObject = new JSONObject(content);
 						
