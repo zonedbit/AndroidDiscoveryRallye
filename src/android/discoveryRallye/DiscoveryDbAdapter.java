@@ -59,14 +59,31 @@ public class DiscoveryDbAdapter implements IDBPOI{
      */
     public DiscoveryDbAdapter(Context ctx){
     	this.ctx = ctx; 
+    	
     }
     
    
     // TODO Comment me
     public DiscoveryDbAdapter open() throws SQLiteException{
+    	
     	dbHelper = new DatabaseHelper(ctx);
     	sldb = dbHelper.getWritableDatabase();
+    	
+    	checkDB();
+    	
     	return this;
+    }
+    
+    private void checkDB()
+    {
+    	//wenn nichts in der Datenbank ist, dann können gerne die default-Daten rein
+    	if(getPOIs() != null)
+    	{
+    		if(!(getPOIs().getCount() > 0))
+    		{
+    			setDefaultPOIs();
+    		}
+    	}
     }
     
     /**
@@ -151,7 +168,12 @@ public class DiscoveryDbAdapter implements IDBPOI{
     	sldb.execSQL(STMT_DROP_POIS);
     	sldb.execSQL(STMT_CREATE);
     	
-    	// Set all defaults POIs
+    	setDefaultPOIs();
+    }
+    
+    private void setDefaultPOIs()
+    {
+      	// Set all defaults POIs
 		insertPoi(new POI(51.493670, 7.420191, "FH FB Informatik" ));
 		insertPoi(new POI(51.493396, 7.416286, "Sonnendeck" ));
 		insertPoi(new POI(51.492748, 7.416855, "Uni Bibliothek" ));

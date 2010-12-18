@@ -62,7 +62,7 @@ public class CampusOSM extends Activity {
     	POIContainer poiContainer = POIContainer.getInstance(getBaseContext());
     	ArrayList<POI> allPOIs = poiContainer.getALLPOIs();
     	
-    	//initiales Füllen der Karte mit Items
+    	//initiales Füllen der Karte mit Items. Dazu brauche ich z.B. die Default-Daten. Der Overlay braucht mindestens ein Item.
     	for (POI poi : allPOIs) {
     		OpenStreetMapViewOverlayItem openStreetMapViewOverlayItem = new OpenStreetMapViewOverlayItem(poi.getDescription(), poi.getDescription(), new GeoPoint(poi.getLat(), poi.getLon()));
 			items.add(openStreetMapViewOverlayItem);
@@ -120,7 +120,7 @@ public class CampusOSM extends Activity {
     {
 	        this.itemizedOverlay = new OpenStreetMapViewItemizedOverlayWithFocus<OpenStreetMapViewOverlayItem>(this, items, new ItemGestureListener<OpenStreetMapViewOverlayItem>(), mResourceProxy);
 	        this.itemizedOverlay.setFocusItemsOnTap(false);
-	        //this.itemizedOverlay.setFocusedItem(0); //TODO: Dadurch zoomt er erst zur FH und dann zur später zur eigenen Position -> Gewollt?
+	        //this.itemizedOverlay.setFocusedItem(0); //TODO: Dadurch zoomt er erst zur FH und dann zur später zur eigenen Position
 	        openStreetMapView.getOverlays().add(this.itemizedOverlay);
 	}
     
