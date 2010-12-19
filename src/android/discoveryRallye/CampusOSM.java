@@ -14,7 +14,9 @@ import android.app.Activity;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.StaticLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.RelativeLayout;
@@ -30,22 +32,20 @@ public class CampusOSM extends Activity {
 	//Emil-Figge Straße 42
 	GeoPoint fb4 = new GeoPoint(51494995, 7419649);
 	
-	private static ArrayList<GeoPoint> geopoints = new ArrayList<GeoPoint>();
+	private ArrayList<GeoPoint> geopoints = new ArrayList<GeoPoint>();
 	
 	private RelativeLayout relativeLayout;
 	private static ArrayList<OpenStreetMapViewOverlayItem> items = new ArrayList<OpenStreetMapViewOverlayItem>();
 	private static MyLocationOverlay myLocationOverlay;
 	private POI destination;
 	private ScaleBarOverlay scaleBarOverlay;
+	private static RouteOverlay routeOverlay = null;
+	
+	private static int rallyeState = 0;
 	
 	public static ArrayList<OpenStreetMapViewOverlayItem> getItems()
 	{
 		return items;
-	}
-	
-	public static ArrayList<GeoPoint> getGeoPoints()
-	{
-		return geopoints;
 	}
 	
 	public static OpenStreetMapView getOpenStreetMapView()
@@ -56,6 +56,11 @@ public class CampusOSM extends Activity {
 	public static MyLocationOverlay getMyLocationOverlay()
 	{
 		return myLocationOverlay;
+	}
+	
+	public static RouteOverlay getRouteOverlay()
+	{
+		return routeOverlay;
 	}
 	
     @Override
@@ -84,18 +89,22 @@ public class CampusOSM extends Activity {
         setPreferences();
         
         Intent intent = getIntent();
-        
         Bundle bundle = intent.getExtras();
         
         //Die Karte wird mit einem neuen POI aufgerufen. Dabei soll die Route gezeichnet werden
         if(bundle != null)
         {
 			geopoints = (ArrayList<GeoPoint>) bundle.get("pois");
-        	destination =  (POI) bundle.get("destination");
-        	RouteOverlay routeOverlay = new RouteOverlay(geopoints, openStreetMapView, this);
-			openStreetMapView.getOverlays().add(routeOverlay);
+			destination = (POI) bundle.get("destination");
 			openStreetMapView.getController().setCenter(geopoints.get(0));
+			addRouteOverlay();
         }
+    }
+    
+    private void addRouteOverlay()
+    {
+		routeOverlay = new RouteOverlay(geopoints, openStreetMapView, this, Color.YELLOW);
+		openStreetMapView.getOverlays().add(routeOverlay);
     }
     
     
@@ -185,7 +194,12 @@ public class CampusOSM extends Activity {
     {
     	menu.add(0, 1, Menu.FIRST, "Zeige Standort");
     	menu.add(0, 2, Menu.NONE, "Speichere aktuelle Location");
-    	menu.add(0, 3, Menu.NONE, "Zeichne die Route neu");
+//    	if(destination != null)
+//    	{
+//    		menu.add(0, 3, Menu.NONE, "Zeichne deine gesuchte Route neu");
+//    	}
+    	menu.add(0, 4, Menu.NONE, "Starte Rallye/Nächstes Ziel");
+    	menu.add(0, 5, Menu.NONE, "Neue Wegbeschreibung für die Rallye");
 		return true;
     }
     
@@ -203,16 +217,70 @@ public class CampusOSM extends Activity {
 				openStreetMapView.getController().setZoom(15);
 				return true;
 			}
-			
+			return false;
 		case 2:
 			if(userLocation != null)
 			{
 				addItem(userLocation.getLatitudeE6() / 1E6, userLocation.getLongitudeE6() / 1E6);
+				return true;
 			}
-			return true;
+			return false;
 		case 3:
 			JSONRequest jsonRequest = new JSONRequest(this, destination);
 			jsonRequest.calculateRoute();
+			return true;
+		case 4:
+			if(rallyeState != DiscoveryDbAdapter.staticPois.length)
+			{
+				Builder builder = new Builder(this);
+				builder.setTitle("Ziel");
+				builder.setMessage("Das Ziel ist: " + DiscoveryDbAdapter.staticPois[rallyeState].getDescription());
+				builder.setCancelable(false);
+				builder.setPositiveButton("OK", new DialogInterface.OnClickListener() 
+				{
+					public void onClick(DialogInterface dialog, int which) 
+					{
+						JSONRequest jsonRequestForNextRallyeWayPoint = new JSONRequest(CampusOSM.this, DiscoveryDbAdapter.staticPois[rallyeState]);
+						jsonRequestForNextRallyeWayPoint.calculateRoute();
+						rallyeState++;
+					}
+				});
+				
+				builder.create();
+				builder.show();
+			}
+			else
+			{
+				Builder builder = new Builder(this);
+				builder.setTitle("Die Rallye wurde bereits durchlaufen.");
+				builder.setMessage("Soll die Rallye von vorne beginnen?");
+				builder.setCancelable(false);
+				builder.setPositiveButton("Ja", new DialogInterface.OnClickListener() 
+				{
+					public void onClick(DialogInterface dialog, int which) 
+					{
+						rallyeState = 0;
+					}
+				});
+				
+				builder.setNegativeButton("Nein", new DialogInterface.OnClickListener() 
+				{
+					public void onClick(DialogInterface dialog, int which) 
+					{
+						dialog.cancel();
+					}
+				});
+				
+				builder.create();
+				builder.show();
+			}
+			return false;
+		case 5: 
+			if(rallyeState != DiscoveryDbAdapter.staticPois.length)
+			{
+				JSONRequest jsonRequestForCurrentRallyeWayPoint = new JSONRequest(this, DiscoveryDbAdapter.staticPois[rallyeState - 1]);
+				jsonRequestForCurrentRallyeWayPoint.calculateRoute();
+			}
 			return true;
 		}
 		return false;

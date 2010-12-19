@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import org.andnav.osm.contributor.util.Util;
 import org.andnav.osm.util.GeoPoint;
+import org.andnav.osm.views.overlay.OpenStreetMapViewOverlay;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -23,6 +24,7 @@ import android.app.AlertDialog.Builder;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -178,7 +180,7 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (JSONException e) {
-			e.printStackTrace();
+			Log.d(JSONRequest.class.getName(), e.getMessage());
 		}
 		
 		Log.d(JSONRequest.class.getName(), "Abfrage des Webservices abgeschlossen");
@@ -191,16 +193,15 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 	{
 		if(result.size() > 0)
 		{
-			Intent intent = new Intent(activity, DiscoveryRallye.class);
-			Bundle bundle = new Bundle();
-			
-			bundle.putParcelableArrayList("pois", result);
-			bundle.putSerializable("destination", destination);
-			intent.putExtras(bundle);
-			
 			//sonst ist es die Route, die auf der Karte neu gezeichnet wird
 			if(activity instanceof POIList)
 			{
+				Intent intent = new Intent(activity, DiscoveryRallye.class);
+				Bundle bundle = new Bundle();
+				
+				bundle.putParcelableArrayList("pois", result);
+				bundle.putSerializable("destination", destination);
+				intent.putExtras(bundle);
 				dialog.dismiss();
 				activity.startActivity(intent);
 				activity.finish();
@@ -208,15 +209,34 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 			else if(activity instanceof CampusOSM)
 			{
 				dialog.dismiss();
-				CampusOSM.getGeoPoints().clear();
-				CampusOSM.getGeoPoints().addAll(result);
+				
+				OpenStreetMapViewOverlay overlayToRemove = null;
+				
+				//das vorherige Overlay muss entfernt werden
+				for(OpenStreetMapViewOverlay overlay : CampusOSM.getOpenStreetMapView().getOverlays())
+				{
+					if(overlay instanceof RouteOverlay)
+					{
+						overlayToRemove = overlay;
+					}
+				}
+				
+				if(overlayToRemove != null)
+				{
+					CampusOSM.getOpenStreetMapView().getOverlays().remove(overlayToRemove);
+				}
+				
+				CampusOSM.getOpenStreetMapView().getOverlays().add(new RouteOverlay(result, CampusOSM.getOpenStreetMapView(), activity, Color.CYAN));
+				
+				CampusOSM.getOpenStreetMapView().getController().setCenter(result.get(0));
 				CampusOSM.getOpenStreetMapView().invalidate();
 			}
-			
 		}
 		else
 		{
 			{
+				dialog.dismiss();
+				
 				Builder builder = new Builder(activity);
 				builder.setTitle("Probleme beim Laden der Route");
 				builder.setMessage("Routeninformationen konnten nicht heruntergeladen werden - Service nicht erreichbar");
@@ -247,25 +267,40 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 			
 			GeoPoint geoPoint = CampusOSM.getMyLocationOverlay().getMyLocation();
 			
-			Location userLocation = new Location("my Location");
-			
-			userLocation.setLatitude(geoPoint.getLatitudeE6() / 1E6);
-			userLocation.setLongitude(geoPoint.getLongitudeE6() / 1E6);
-			
-			if(userLocation != null)
+			if(geoPoint != null)
 			{
-				myLocation  = new POI(userLocation.getLatitude(), userLocation.getLongitude(), "My Location");
+				Location userLocation = new Location("my Location");
+				
+				userLocation.setLatitude(geoPoint.getLatitudeE6() / 1E6);
+				userLocation.setLongitude(geoPoint.getLongitudeE6() / 1E6);
+				
+				if(userLocation != null)
+				{
+					myLocation  = new POI(userLocation.getLatitude(), userLocation.getLongitude(), "My Location");
+				}
+				
+				pois.add(myLocation);
+				pois.add(destination);
+				
+				this.execute(pois);
 			}
-//			else
-//			{
-//				Location retrievedLocation = GeoUtils.retrieveLastKnownLocation(activity);
-//				myLocation = new POI(retrievedLocation.getLatitude(), retrievedLocation.getLongitude(), "My Location");
-//			}
-			
-			pois.add(myLocation);
-			pois.add(destination);
-			
-			this.execute(pois);
+			else
+			{
+				Builder builder = new Builder(activity);
+				builder.setTitle("GPS-Signal");
+				builder.setMessage("Es ist noch kein GPS-Signal aufrufbar");
+				builder.setCancelable(false);
+				builder.setPositiveButton("OK", new DialogInterface.OnClickListener() 
+				{
+					public void onClick(DialogInterface dialog, int which) 
+					{
+						dialog.cancel();
+					}
+				});
+				
+				builder.create();
+				builder.show();
+			}
 		}
 	}
 }

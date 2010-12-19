@@ -20,9 +20,9 @@
             </intent-filter>
         </activity>
 	
-	    <activity android:name=".CampusOSM"></activity>
-	    <activity android:name=".Note"></activity>
-	    <activity android:name=".POIList"></activity>
+	    <activity android:name=".CampusOSM" android:screenOrientation="landscape"></activity>
+	    <activity android:name=".Note" android:screenOrientation="landscape"></activity>
+	    <activity android:name=".POIList" android:screenOrientation="landscape"></activity>
 </application>
 
 

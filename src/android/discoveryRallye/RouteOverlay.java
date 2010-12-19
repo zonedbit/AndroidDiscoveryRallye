@@ -21,15 +21,22 @@ public class RouteOverlay extends OpenStreetMapViewOverlay {
 	private ArrayList<GeoPoint> geoPoints;
 	private OpenStreetMapView openStreetMapView = null;
 	private final Activity activity;
+	private final int color;
+	
+	public  void setGeoPoints(ArrayList<GeoPoint> geoPoints)
+	{
+		this.geoPoints = geoPoints;
+	}
 
-	public RouteOverlay(ArrayList<GeoPoint> geoPoints, OpenStreetMapView openStreetMapView, Activity activity) 
+	public RouteOverlay(ArrayList<GeoPoint> geoPoints, OpenStreetMapView openStreetMapView, Activity activity, int color) 
 	{
 		super(activity);
 		this.geoPoints = geoPoints;
 		this.openStreetMapView  = openStreetMapView;
 		this.activity = activity;
+		this.color = color;
 	}
-
+	
 	@Override
 	protected void onDraw(Canvas canvas, OpenStreetMapView openStreetMapView) 
 	{
@@ -72,7 +79,7 @@ public class RouteOverlay extends OpenStreetMapViewOverlay {
 	    
 	    Paint polygonPaint = new Paint();
 	    polygonPaint.setStrokeWidth(3); 
-	    polygonPaint.setColor(Color.RED);
+	    polygonPaint.setColor(color);
 	    polygonPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 	    polygonPaint.setAntiAlias(true);
 	    canvas.drawPath(p, polygonPaint);
@@ -83,5 +90,4 @@ public class RouteOverlay extends OpenStreetMapViewOverlay {
 		// TODO Auto-generated method stub
 		
 	}
-
 }
