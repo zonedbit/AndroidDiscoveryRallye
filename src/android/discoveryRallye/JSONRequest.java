@@ -135,19 +135,24 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 		
 		try {
 			HttpResponse response = httpClient.execute(httpGet);
+			Log.d(JSONRequest.class.getName(), "Ausfuehrung der Antwort");
 			
 			if(response.getStatusLine().getStatusCode() == 200)
 			{
+				Log.d(JSONRequest.class.getName(), "StatusCode = 200");
+				
 				HttpEntity entity = response.getEntity();
 				
 				if(entity != null)
 				{
-					Log.d(JSONRequest.class.getName(), "Rückgabewert vorhanden");
+					Log.d(JSONRequest.class.getName(), "Rueckgabewert vorhanden");
 					
 					String content = getContent(entity);
 					
 					if(!content.contains("busy"))
 					{
+						Log.d(JSONRequest.class.getName(), "Server is not busy");
+						
 						JSONObject jsonObject = new JSONObject(content);
 						
 						JSONArray jsonArray = jsonObject.getJSONArray("coordinates");
@@ -164,42 +169,9 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 							geoPoints.add(geoPoint);
 						}
 					}
-					else
-					{
-						Builder builder = new Builder(activity);
-						builder.setTitle("Probleme beim Laden der Route");
-						builder.setMessage("Routeninformationen konnten nicht heruntergeladen werden - Der Service ist beschäftigt...");
-						builder.setCancelable(false);
-						builder.setPositiveButton("OK", new DialogInterface.OnClickListener() 
-						{
-							public void onClick(DialogInterface dialog, int which) 
-							{
-								dialog.cancel();
-							}
-						});
-						
-						builder.create();
-						builder.show();
-					}
 				}
 			}
-			else
-			{
-				Builder builder = new Builder(activity);
-				builder.setTitle("Probleme beim Laden der Route");
-				builder.setMessage("Routeninformationen konnten nicht heruntergeladen werden - Service nicht erreichbar?");
-				builder.setCancelable(false);
-				builder.setPositiveButton("OK", new DialogInterface.OnClickListener() 
-				{
-					public void onClick(DialogInterface dialog, int which) 
-					{
-						dialog.cancel();
-					}
-				});
-				
-				builder.create();
-				builder.show();
-			}
+		
 			
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
@@ -229,18 +201,39 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 			//sonst ist es die Route, die auf der Karte neu gezeichnet wird
 			if(activity instanceof POIList)
 			{
+				dialog.dismiss();
 				activity.startActivity(intent);
 				activity.finish();
 			}
 			else if(activity instanceof CampusOSM)
 			{
+				dialog.dismiss();
 				CampusOSM.getGeoPoints().clear();
 				CampusOSM.getGeoPoints().addAll(result);
 				CampusOSM.getOpenStreetMapView().invalidate();
 			}
 			
 		}
-		dialog.dismiss();
+		else
+		{
+			{
+				Builder builder = new Builder(activity);
+				builder.setTitle("Probleme beim Laden der Route");
+				builder.setMessage("Routeninformationen konnten nicht heruntergeladen werden - Service nicht erreichbar");
+				builder.setCancelable(false);
+				builder.setPositiveButton("OK", new DialogInterface.OnClickListener() 
+				{
+					public void onClick(DialogInterface dialog, int which) 
+					{
+						dialog.cancel();
+					}
+				});
+				
+				builder.create();
+				builder.show();
+			}
+		}
+		
 	}
 
 	@SuppressWarnings("unchecked")

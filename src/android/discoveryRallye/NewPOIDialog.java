@@ -58,11 +58,11 @@ public class NewPOIDialog extends Dialog {
 		setContentView(R.layout.new_poi_dialog);
 		
 		/* Set the title of the dialog box */
-		String title = context.getString(R.string.poiDialogTitle);
+		String title = context.getString(R.string.poiNewDialogTitle);
 		setTitle(title);
 		
 		/* Set the text of the edit field */
-		((EditText)findViewById(R.id.poiDialogEditText)).setText("");
+		((EditText)findViewById(R.id.poiNewDialogNameText)).setText("");
 		
 		/* Setup Listener sadly the xml version android:onClick doesn't work */
 		((Button)findViewById(R.id.poiDialogButtonRename)).setOnClickListener(new OnClickPOIAdd());
@@ -76,7 +76,7 @@ public class NewPOIDialog extends Dialog {
 		public void onClick(View v) {
 			
 			// Get the text from the EditText field
-			String newName = ((EditText)findViewById(R.id.poiDialogEditText)).getText().toString(); 
+			String newName = ((EditText)findViewById(R.id.poiNewDialogNameText)).getText().toString(); 
 				
 			try
 			{

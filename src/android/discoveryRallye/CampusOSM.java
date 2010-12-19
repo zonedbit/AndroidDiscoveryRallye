@@ -11,13 +11,12 @@ import org.andnav.osm.views.overlay.OpenStreetMapViewOverlayItem;
 import org.andnav.osm.views.overlay.ScaleBarOverlay;
 
 import android.app.Activity;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
@@ -93,6 +92,7 @@ public class CampusOSM extends Activity {
         	destination =  (POI) bundle.get("destination");
         	RouteOverlay routeOverlay = new RouteOverlay(geopoints, openStreetMapView, this);
 			openStreetMapView.getOverlays().add(routeOverlay);
+			openStreetMapView.getController().setCenter(geopoints.get(0));
         }
     }
     
@@ -116,9 +116,8 @@ public class CampusOSM extends Activity {
 	        
 	        //Batterie sparen
 	        myLocationOverlay.setLocationUpdateMinDistance(50);
-	        myLocationOverlay.setLocationUpdateMinTime(1000);
+	        myLocationOverlay.setLocationUpdateMinTime(100);
 	        openStreetMapView.getOverlays().add(myLocationOverlay);
-	        
 	}
     
     @Override
@@ -137,14 +136,12 @@ public class CampusOSM extends Activity {
 	private void addItemizedOverlay() 
     {
 	        this.itemizedOverlay = new OpenStreetMapViewItemizedOverlayWithFocus<OpenStreetMapViewOverlayItem>(this, items, new ItemGestureListener<OpenStreetMapViewOverlayItem>(), mResourceProxy);
-	        this.itemizedOverlay.setFocusItemsOnTap(false);
-	        //this.itemizedOverlay.setFocusedItem(0); //TODO: Dadurch zoomt er erst zur FH und dann zur später zur eigenen Position
+	        this.itemizedOverlay.setFocusItemsOnTap(true);
 	        openStreetMapView.getOverlays().add(this.itemizedOverlay);
 	}
     
     public void addItem(double latitude, double longitude)
     {
-    	Log.d(TAG, "");
     	NewPOIDialog dlg = new NewPOIDialog(this, latitude, longitude, items, openStreetMapView);
 		dlg.show();
     }
@@ -167,17 +164,16 @@ public class CampusOSM extends Activity {
     
     public void setInitialView()
     {
-    	openStreetMapView.getController().setZoom(16);
+    	openStreetMapView.getController().setZoom(12);
     	
     	if(myLocationOverlay.getMyLocation() != null)
     	{
     		openStreetMapView.getController().setCenter(myLocationOverlay.getMyLocation());
     	}
-//    	else
-//    	{
-//    		Location retrieveLastKnownLocation = GeoUtils.retrieveLastKnownLocation(this);
-//    		openStreetMapView.getController().setCenter(GeoUtils.createGeoPoint(retrieveLastKnownLocation));
-//    	}
+    	else
+    	{
+    		openStreetMapView.getController().setCenter(fb4);
+    	}
     	openStreetMapView.invalidate();
     	
     }
@@ -201,6 +197,7 @@ public class CampusOSM extends Activity {
 			if(userLocation != null)
 			{
 				openStreetMapView.getController().setCenter(myLocationOverlay.getMyLocation());
+				openStreetMapView.getController().setZoom(15);
 				return true;
 			}
 			
@@ -217,4 +214,30 @@ public class CampusOSM extends Activity {
 		}
 		return false;
     }
+    
+	public void onBackPressed() 
+	{
+		Builder builder = new Builder(this);
+		builder.setTitle("Warnung");
+		builder.setMessage("Wollen Sie die Anwendung wirklich beenden?");
+		builder.setCancelable(false);
+		builder.setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+			
+			public void onClick(DialogInterface dialog, int which) 
+			{
+				CampusOSM.this.finish();
+			}
+		});
+		
+		builder.setNegativeButton("Nein", new DialogInterface.OnClickListener() 
+		{
+			public void onClick(DialogInterface dialog, int id) 
+			{
+				dialog.cancel();
+			}
+		});
+		
+		builder.create();
+		builder.show();
+	}
 }
