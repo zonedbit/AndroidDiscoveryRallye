@@ -194,7 +194,8 @@ public class CampusOSM extends Activity {
     {
     	GeoPoint userLocation = myLocationOverlay.getMyLocation();
     	
-    	switch (item.getItemId()) {
+    	switch (item.getItemId()) 
+    	{
 		case 1:
 			if(userLocation != null)
 			{

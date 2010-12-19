@@ -18,14 +18,17 @@
 			 	<TableRow	android:id="@+id/poiDialogTableRow02" 
 			 				android:layout_width="wrap_content" 
 			 				android:layout_height="wrap_content">
-			 				<EditText	android:text="@string/poiNewDialogName" 
-			 							android:id="@+id/poiNewDialogNameText" 
+			 				<EditText	android:id="@+id/poiNewDialogNameText" 
 			 							android:layout_width="wrap_content" 
 			 							android:layout_height="wrap_content"
 			 							android:singleLine="true"
 			 							android:hint="Bezeichnung"/>
-							<Button	android:text="@string/poiDialogButtonRename" 
-									android:id="@+id/poiDialogButtonRename" 
+							<Button	android:text="@string/poiNewDialogButtonAdd" 
+									android:id="@+id/poiDialogButtonAdd" 
+									android:layout_width="wrap_content" 
+									android:layout_height="wrap_content"/>
+							<Button	android:text="@string/poiNewDialogButtonAbort" 
+									android:id="@+id/poiDialogButtonAbort" 
 									android:layout_width="wrap_content" 
 									android:layout_height="wrap_content"/>
 				</TableRow>

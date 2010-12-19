@@ -8,6 +8,7 @@ import org.andnav.osm.views.overlay.OpenStreetMapViewOverlayItem;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.sqlite.SQLiteConstraintException;
 import android.os.Bundle;
 import android.view.View;
@@ -62,10 +63,18 @@ public class NewPOIDialog extends Dialog {
 		setTitle(title);
 		
 		/* Set the text of the edit field */
-		((EditText)findViewById(R.id.poiNewDialogNameText)).setText("");
+		EditText subTitle = ((EditText)findViewById(R.id.poiNewDialogNameText));
 		
 		/* Setup Listener sadly the xml version android:onClick doesn't work */
-		((Button)findViewById(R.id.poiDialogButtonRename)).setOnClickListener(new OnClickPOIAdd());
+		((Button)findViewById(R.id.poiDialogButtonAdd)).setOnClickListener(new OnClickPOIAdd());
+		
+		((Button)findViewById(R.id.poiDialogButtonAbort)).setOnClickListener(new android.view.View.OnClickListener() {
+			
+			public void onClick(View v) 
+			{
+				NewPOIDialog.this.cancel();
+			}
+		});
 		
 	}
 

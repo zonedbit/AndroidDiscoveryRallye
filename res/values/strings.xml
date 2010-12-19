@@ -17,5 +17,7 @@
 	<string name="poiDialogButtonDelete">Löschen</string>
 	
 	<string name="poiNewDialogTitle">Anlegen eines neuen POIs </string>
-	<string name="poiNewDialogName">Bezeichung des POIs </string>
+	<string name="poiNewDialogName">Bezeichung des POIs:</string>
+	<string name="poiNewDialogButtonAdd">OK</string>
+	<string name="poiNewDialogButtonAbort">Abbrechen</string>
 </resources>

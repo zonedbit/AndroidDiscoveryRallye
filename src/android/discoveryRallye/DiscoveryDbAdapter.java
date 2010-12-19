@@ -174,9 +174,17 @@ public class DiscoveryDbAdapter implements IDBPOI{
     private void setDefaultPOIs()
     {
       	// Set all defaults POIs
-		insertPoi(new POI(51.493670, 7.420191, "FH FB Informatik" ));
-		insertPoi(new POI(51.493396, 7.416286, "Sonnendeck" ));
-		insertPoi(new POI(51.492748, 7.416855, "Uni Bibliothek" ));
-		insertPoi(new POI(51.493009, 7.414805, "Uni Mensa" ));
+		insertPoi(staticPois[0]);
+		insertPoi(staticPois[1]);
+		insertPoi(staticPois[2]);
+		insertPoi(staticPois[3]);
     }
+    
+    public static POI[] staticPois = 
+    {
+    	new POI(51.493670, 7.420191, "FH FB Informatik"), 
+    	new POI(51.493396, 7.416286, "Sonnendeck"),
+    	new POI(51.492748, 7.416855, "Uni Bibliothek"),
+    	new POI(51.493009, 7.414805, "Uni Mensa")
+    };
 }

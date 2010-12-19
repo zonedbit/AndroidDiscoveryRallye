@@ -56,30 +56,4 @@ public class DiscoveryRallye extends TabActivity {
         	}
         }
     }
-    
-	public void onBackPressed() 
-	{
-		Builder builder = new Builder(this);
-		builder.setTitle("Warnung");
-		builder.setMessage("Wollen Sie die Anwendung wirklich beenden?");
-		builder.setCancelable(false);
-		builder.setPositiveButton("Ja", new DialogInterface.OnClickListener() {
-			
-			public void onClick(DialogInterface dialog, int which) 
-			{
-				DiscoveryRallye.this.finish();
-			}
-		});
-		
-		builder.setNegativeButton("Nein", new DialogInterface.OnClickListener() 
-		{
-			public void onClick(DialogInterface dialog, int id) 
-			{
-				dialog.cancel();
-			}
-		});
-		
-		builder.create();
-		builder.show();
-	}
 }
