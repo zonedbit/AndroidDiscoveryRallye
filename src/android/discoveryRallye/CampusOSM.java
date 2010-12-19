@@ -69,8 +69,10 @@ public class CampusOSM extends Activity {
     	ArrayList<POI> allPOIs = poiContainer.getALLPOIs();
     	
     	//initiales Füllen der Karte mit Items. Dazu brauche ich z.B. die Default-Daten. Der Overlay braucht mindestens ein Item.
-    	for (POI poi : allPOIs) {
-    		OpenStreetMapViewOverlayItem openStreetMapViewOverlayItem = new OpenStreetMapViewOverlayItem(poi.getDescription(), poi.getDescription(), new GeoPoint(poi.getLat(), poi.getLon()));
+    	items.clear();
+    	for (POI poi : allPOIs) 
+    	{
+    		OpenStreetMapViewOverlayItem openStreetMapViewOverlayItem = new OpenStreetMapViewOverlayItem(poi.getDescription(), "", new GeoPoint(poi.getLat(), poi.getLon()));
 			items.add(openStreetMapViewOverlayItem);
 		}
     	
@@ -122,17 +124,17 @@ public class CampusOSM extends Activity {
     
     @Override
     protected void onPause() {
+    	super.onPause();
     	//Batterie sparen
     	myLocationOverlay.disableMyLocation();
-    	super.onPause();
     }
     
     @Override
     protected void onResume() {
-    	myLocationOverlay.enableMyLocation();
     	super.onResume();
+    	myLocationOverlay.enableMyLocation();
     }
-
+    
 	private void addItemizedOverlay() 
     {
 	        this.itemizedOverlay = new OpenStreetMapViewItemizedOverlayWithFocus<OpenStreetMapViewOverlayItem>(this, items, new ItemGestureListener<OpenStreetMapViewOverlayItem>(), mResourceProxy);
@@ -214,30 +216,4 @@ public class CampusOSM extends Activity {
 		}
 		return false;
     }
-    
-	public void onBackPressed() 
-	{
-		Builder builder = new Builder(this);
-		builder.setTitle("Warnung");
-		builder.setMessage("Wollen Sie die Anwendung wirklich beenden?");
-		builder.setCancelable(false);
-		builder.setPositiveButton("Ja", new DialogInterface.OnClickListener() {
-			
-			public void onClick(DialogInterface dialog, int which) 
-			{
-				CampusOSM.this.finish();
-			}
-		});
-		
-		builder.setNegativeButton("Nein", new DialogInterface.OnClickListener() 
-		{
-			public void onClick(DialogInterface dialog, int id) 
-			{
-				dialog.cancel();
-			}
-		});
-		
-		builder.create();
-		builder.show();
-	}
 }
