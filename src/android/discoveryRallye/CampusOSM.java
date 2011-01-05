@@ -16,7 +16,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.text.StaticLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.RelativeLayout;
@@ -37,7 +36,7 @@ public class CampusOSM extends Activity {
 	private RelativeLayout relativeLayout;
 	private static ArrayList<OpenStreetMapViewOverlayItem> items = new ArrayList<OpenStreetMapViewOverlayItem>();
 	private static MyLocationOverlay myLocationOverlay;
-	private POI destination;
+	private POI destination = null;
 	private ScaleBarOverlay scaleBarOverlay;
 	private static RouteOverlay routeOverlay = null;
 	
@@ -112,7 +111,7 @@ public class CampusOSM extends Activity {
     	this.scaleBarOverlay = new ScaleBarOverlay(this, mResourceProxy);
     	CampusOSM.openStreetMapView.getOverlays().add(scaleBarOverlay);
     	this.scaleBarOverlay.setScaleBarOffset(scaleBarOverlay.screenWidth/2 - scaleBarOverlay.xdpi/2, 10);
-    	this.scaleBarOverlay.setImperial();
+    	this.scaleBarOverlay.setMetric();
 	}
 
 	private void addMyLocationOverlay() {
@@ -121,6 +120,9 @@ public class CampusOSM extends Activity {
 	        
 	        //dadurch folgt die Map der Position
 	        myLocationOverlay.followLocation(true);
+	        
+	        //Provider starten hier durch
+	        myLocationOverlay.enableMyLocation();
 	        
 	        //und ein Kompass soll her
 	        myLocationOverlay.enableCompass();
@@ -194,10 +196,7 @@ public class CampusOSM extends Activity {
     {
     	menu.add(0, 1, Menu.FIRST, "Zeige Standort");
     	menu.add(0, 2, Menu.NONE, "Speichere aktuelle Location");
-//    	if(destination != null)
-//    	{
-//    		menu.add(0, 3, Menu.NONE, "Zeichne deine gesuchte Route neu");
-//    	}
+    	menu.add(0, 3, Menu.NONE, "Zeichne deine gesuchte Route neu");
     	menu.add(0, 4, Menu.NONE, "Starte Rallye/Nächstes Ziel");
     	menu.add(0, 5, Menu.NONE, "Neue Wegbeschreibung für die Rallye");
 		return true;
@@ -278,10 +277,30 @@ public class CampusOSM extends Activity {
 		case 5: 
 			if(rallyeState != DiscoveryDbAdapter.staticPois.length)
 			{
-				JSONRequest jsonRequestForCurrentRallyeWayPoint = new JSONRequest(this, DiscoveryDbAdapter.staticPois[rallyeState - 1]);
-				jsonRequestForCurrentRallyeWayPoint.calculateRoute();
+				if(rallyeState > 0)
+				{
+					JSONRequest jsonRequestForCurrentRallyeWayPoint = new JSONRequest(this, DiscoveryDbAdapter.staticPois[rallyeState - 1]);
+					jsonRequestForCurrentRallyeWayPoint.calculateRoute();
+					return true;
+				}
+				else
+				{
+					Builder builder = new Builder(this);
+					builder.setTitle("Keine Route vorhanden");
+					builder.setMessage("Die Rallye hat noch nicht begonnen. Bitte starte erst die Rallye!");
+					builder.setCancelable(false);
+					builder.setPositiveButton("OK", new DialogInterface.OnClickListener() 
+					{
+						public void onClick(DialogInterface dialog, int which) 
+						{
+							dialog.cancel();
+						}
+					});
+					
+					builder.create();
+					builder.show();
+				}
 			}
-			return true;
 		}
 		return false;
     }

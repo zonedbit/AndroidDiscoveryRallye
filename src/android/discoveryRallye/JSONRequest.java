@@ -226,7 +226,7 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 					CampusOSM.getOpenStreetMapView().getOverlays().remove(overlayToRemove);
 				}
 				
-				CampusOSM.getOpenStreetMapView().getOverlays().add(new RouteOverlay(result, CampusOSM.getOpenStreetMapView(), activity, Color.CYAN));
+				CampusOSM.getOpenStreetMapView().getOverlays().add(new RouteOverlay(result, CampusOSM.getOpenStreetMapView(), activity, Color.YELLOW));
 				
 				CampusOSM.getOpenStreetMapView().getController().setCenter(result.get(0));
 				CampusOSM.getOpenStreetMapView().invalidate();
@@ -301,6 +301,23 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 				builder.create();
 				builder.show();
 			}
+		}
+		else
+		{
+			Builder builder = new Builder(activity);
+			builder.setTitle("Keine Route wurde ausgewählt");
+			builder.setMessage("Da keine Route ausgewählt wurde, kann auch keine neu gezeichnet werden.");
+			builder.setCancelable(false);
+			builder.setPositiveButton("OK", new DialogInterface.OnClickListener() 
+			{
+				public void onClick(DialogInterface dialog, int which) 
+				{
+					dialog.cancel();
+				}
+			});
+			
+			builder.create();
+			builder.show();
 		}
 	}
 }

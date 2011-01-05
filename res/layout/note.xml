@@ -18,7 +18,8 @@
 					android:layout_width="fill_parent"
 					android:layout_height="fill_parent"
 					android:gravity="top"
-					android:lines="6"
+					android:lines="9"
+					android:windowSoftInputMode="adjustResize"
 					android:singleLine="false"
 					android:inputType="text|textMultiLine"
 					/>
