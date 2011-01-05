@@ -79,7 +79,6 @@ public class POIContainer implements IDBPOI {
 	 * @param name the name of the POI
 	 * @param id the id in the ListView (is equal with the id in the ArrayLists)
 	 */
-	// TODO first parameter isn't necessary 
 	public void removePOI(String name, int id){
 		// Delete form the ArrayLists
 		pois.remove((int)id);
@@ -161,7 +160,9 @@ public class POIContainer implements IDBPOI {
 	}
 	
 	
-	// TODO Comment me
+	/**
+	 * Fetch the data form the database and setup this POIContainer
+	 */
 	private void fillPois(){
 		DiscoveryDbAdapter db = new DiscoveryDbAdapter(ctx);
 		
