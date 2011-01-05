@@ -51,13 +51,11 @@ public class POIContainer implements IDBPOI {
 		long result = -1;
 		
 		DiscoveryDbAdapter db = new DiscoveryDbAdapter(ctx);
-		db.open();
 		
 		if (db != null ){
+			db.open();
 			result = db.insertPoi(poi);
 			db.close();
-		}else{
-			Log.e("DiscoveryRallye","ERROR POIContainer::addPOIdb()");
 		}
 
 		/* 
@@ -81,7 +79,6 @@ public class POIContainer implements IDBPOI {
 	 * @param name the name of the POI
 	 * @param id the id in the ListView (is equal with the id in the ArrayLists)
 	 */
-	// TODO first parameter isn't necessary 
 	public void removePOI(String name, int id){
 		// Delete form the ArrayLists
 		pois.remove((int)id);
@@ -93,8 +90,6 @@ public class POIContainer implements IDBPOI {
 		if (db != null ){
 			db.deletePOI(name);
 			db.close();
-		}else{
-			Log.e("DiscoveryRallye","POIContainer::removePOI(long id)");
 		}
 	}
 	
@@ -115,12 +110,10 @@ public class POIContainer implements IDBPOI {
 		pois.get(id).setDescription(newName);
 		poisName.set(id, newName);
 		
-		db.open();
 		if (db != null ){
+			db.open();
 			db.renamePOI(oldName, newName);
 			db.close();
-		}else{
-			Log.e("DiscoveryRallye","POIContainer::removePOI(long id)");
 		}
 	}
 	
@@ -167,15 +160,14 @@ public class POIContainer implements IDBPOI {
 	}
 	
 	
-	// TODO Comment me
+	/**
+	 * Fetch the data form the database and setup this POIContainer
+	 */
 	private void fillPois(){
 		DiscoveryDbAdapter db = new DiscoveryDbAdapter(ctx);
 		
 		if ( db != null ){
 			db.open();
-			
-			//TODO Delete Reset DB
-//			db.resetDB();
 			
 			Cursor c = db.getPOIs();
 			/* If c a vaild cursor */
@@ -206,6 +198,26 @@ public class POIContainer implements IDBPOI {
 			}
 			// Close the DB
 			db.close();
+		}
+	}
+	
+	/**
+	 * Reset the DB and the POIContainer to the default values
+	 */
+	public void reInit(){
+		
+		DiscoveryDbAdapter db = new DiscoveryDbAdapter(ctx);
+		
+		if ( db != null ){
+			// Reset the DB
+			db.open();
+			db.resetDB();
+			db.close();
+			
+			// ReInit the ArrayLists
+			pois = new ArrayList<POI>();
+			poisName = new ArrayList<String>();
+			fillPois();
 		}
 	}
 
