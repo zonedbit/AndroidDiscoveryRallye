@@ -10,6 +10,19 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 public class DiscoveryDbAdapter implements IDBPOI{
+	
+	/* Some static POIs around the campus do */
+    public static POI[] staticPois = 
+    {
+    	new POI(51.493670, 7.420191, "FH FB Informatik"), 
+    	new POI(51.494467, 7.420663, "FH Mensa"),
+    	new POI(51.494073, 7.421479, "FH FB Architektur"),
+    	new POI(51.493652, 7.418754, "FH FB Wirtschaft"),
+    	new POI(51.493396, 7.416286, "Sonnendeck"),
+    	new POI(51.492559, 7.417670, "S-Bahn (Uni)"),
+    	new POI(51.492748, 7.416855, "Uni Bibliothek"),
+    	new POI(51.493009, 7.414805, "Uni Mensa"),
+    };
     
     /* Database statements since version 1*/
     private static final String STMT_CREATE = 
@@ -174,17 +187,11 @@ public class DiscoveryDbAdapter implements IDBPOI{
     private void setDefaultPOIs()
     {
       	// Set all defaults POIs
-		insertPoi(staticPois[0]);
-		insertPoi(staticPois[1]);
-		insertPoi(staticPois[2]);
-		insertPoi(staticPois[3]);
+    	for(int i=0; i< staticPois.length; i++){
+    		insertPoi(staticPois[i]);
+    	}
+    	
     }
     
-    public static POI[] staticPois = 
-    {
-    	new POI(51.493670, 7.420191, "FH FB Informatik"), 
-    	new POI(51.493396, 7.416286, "Sonnendeck"),
-    	new POI(51.492748, 7.416855, "Uni Bibliothek"),
-    	new POI(51.493009, 7.414805, "Uni Mensa")
-    };
+
 }

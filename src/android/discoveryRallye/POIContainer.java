@@ -175,7 +175,7 @@ public class POIContainer implements IDBPOI {
 			db.open();
 			
 			//TODO Delete Reset DB
-//			db.resetDB();
+			db.resetDB();
 			
 			Cursor c = db.getPOIs();
 			/* If c a vaild cursor */
