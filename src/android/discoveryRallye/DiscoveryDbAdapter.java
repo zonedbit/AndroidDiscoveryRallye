@@ -26,7 +26,8 @@ public class DiscoveryDbAdapter implements IDBPOI{
     
     /* Database statements since version 1*/
     private static final String STMT_CREATE = 
-    	"create table " + DB_TABLE_POIS 
+    	"create table if not exists " 
+    					+ DB_TABLE_POIS 
     					+ " ("
     					+ 		ATTR_ID   + " integer primary key autoincrement, "
     					+ 	    ATTR_NAME + " text   unique  , " 
