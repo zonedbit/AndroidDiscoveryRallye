@@ -1,9 +1,6 @@
 package android.discoveryRallye;
 
-import org.andnav.osm.util.GeoPoint;
-
 import android.app.ListActivity;
-import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;

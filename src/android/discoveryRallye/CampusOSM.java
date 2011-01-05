@@ -16,7 +16,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.text.StaticLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.RelativeLayout;

@@ -8,7 +8,6 @@ import org.andnav.osm.views.overlay.OpenStreetMapViewOverlayItem;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.database.sqlite.SQLiteConstraintException;
 import android.os.Bundle;
 import android.view.View;

@@ -51,9 +51,9 @@ public class POIContainer implements IDBPOI {
 		long result = -1;
 		
 		DiscoveryDbAdapter db = new DiscoveryDbAdapter(ctx);
-		db.open();
 		
 		if (db != null ){
+			db.open();
 			result = db.insertPoi(poi);
 			db.close();
 		}else{
