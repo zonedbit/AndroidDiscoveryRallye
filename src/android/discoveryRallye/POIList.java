@@ -1,5 +1,8 @@
 package android.discoveryRallye;
 
+import org.andnav.osm.util.GeoPoint;
+import org.andnav.osm.views.overlay.OpenStreetMapViewOverlayItem;
+
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -44,8 +47,15 @@ public class POIList extends ListActivity implements IUIRefreshable,
 	 * @see POIContainer
 	 */
 	public void uiRefresh() {
-		setListAdapter((ListAdapter) new ArrayAdapter<String>(this,
-				R.layout.poi_row, poic.getAllPOIsName()));
+		setListAdapter((ListAdapter) new ArrayAdapter<String>(this,R.layout.poi_row, poic.getAllPOIsName()));
+		CampusOSM.getItems().clear();
+		
+		for(POI poi : DiscoveryDbAdapter.staticPois)
+		{
+			OpenStreetMapViewOverlayItem openStreetMapViewOverlayItem = new OpenStreetMapViewOverlayItem(poi.getDescription(), "", new GeoPoint(poi.getLat(), poi.getLon()));
+			CampusOSM.getItems().add(openStreetMapViewOverlayItem);
+		}
+		CampusOSM.getOpenStreetMapView().invalidate();
 	}
 
 	@Override

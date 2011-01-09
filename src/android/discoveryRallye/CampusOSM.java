@@ -196,9 +196,9 @@ public class CampusOSM extends Activity {
     {
     	menu.add(0, 1, Menu.FIRST, "Zeige Standort");
     	menu.add(0, 2, Menu.NONE, "Speichere aktuelle Location");
-    	menu.add(0, 3, Menu.NONE, "Zeichne deine gesuchte Route neu");
+    	//menu.add(0, 3, Menu.NONE, "Zeichne deine gesuchte Route neu");
     	menu.add(0, 4, Menu.NONE, "Starte Rallye/Nächstes Ziel");
-    	menu.add(0, 5, Menu.NONE, "Neue Wegbeschreibung für die Rallye");
+    	menu.add(0, 5, Menu.NONE, "Neue Route");
 		return true;
     }
     
@@ -225,12 +225,14 @@ public class CampusOSM extends Activity {
 			}
 			return false;
 		case 3:
-			JSONRequest jsonRequest = new JSONRequest(this, destination);
-			jsonRequest.calculateRoute();
+//			JSONRequest jsonRequest = new JSONRequest(this, destination);
+//			jsonRequest.calculateRoute();
 			return true;
 		case 4:
 			if(rallyeState != DiscoveryDbAdapter.staticPois.length)
 			{
+				destination = null;
+				
 				Builder builder = new Builder(this);
 				builder.setTitle("Ziel");
 				builder.setMessage("Das Ziel ist: " + DiscoveryDbAdapter.staticPois[rallyeState].getDescription());
@@ -277,28 +279,38 @@ public class CampusOSM extends Activity {
 		case 5: 
 			if(rallyeState != DiscoveryDbAdapter.staticPois.length)
 			{
-				if(rallyeState > 0)
+				if(destination != null)
 				{
-					JSONRequest jsonRequestForCurrentRallyeWayPoint = new JSONRequest(this, DiscoveryDbAdapter.staticPois[rallyeState - 1]);
-					jsonRequestForCurrentRallyeWayPoint.calculateRoute();
+					JSONRequest jsonRequestForRoute = new JSONRequest(this, destination);
+					jsonRequestForRoute.calculateRoute();
 					return true;
 				}
 				else
 				{
-					Builder builder = new Builder(this);
-					builder.setTitle("Keine Route vorhanden");
-					builder.setMessage("Die Rallye hat noch nicht begonnen. Bitte starte erst die Rallye!");
-					builder.setCancelable(false);
-					builder.setPositiveButton("OK", new DialogInterface.OnClickListener() 
-					{
-						public void onClick(DialogInterface dialog, int which) 
-						{
-							dialog.cancel();
-						}
-					});
 					
-					builder.create();
-					builder.show();
+					if(rallyeState > 0)
+					{
+						JSONRequest jsonRequestForCurrentRallyeWayPoint = new JSONRequest(this, DiscoveryDbAdapter.staticPois[rallyeState - 1]);
+						jsonRequestForCurrentRallyeWayPoint.calculateRoute();
+						return true;
+					}
+					else
+					{
+						Builder builder = new Builder(this);
+						builder.setTitle("Keine Route vorhanden");
+						builder.setMessage("Die Rallye hat noch nicht begonnen. Bitte starte erst die Rallye!");
+						builder.setCancelable(false);
+						builder.setPositiveButton("OK", new DialogInterface.OnClickListener() 
+						{
+							public void onClick(DialogInterface dialog, int which) 
+							{
+								dialog.cancel();
+							}
+						});
+						
+						builder.create();
+						builder.show();
+					}
 				}
 			}
 		}
