@@ -50,10 +50,14 @@ public class POIList extends ListActivity implements IUIRefreshable,
 		setListAdapter((ListAdapter) new ArrayAdapter<String>(this,R.layout.poi_row, poic.getAllPOIsName()));
 		CampusOSM.getItems().clear();
 		
+		GeoPoint greenwich = new GeoPoint(514773, 96);
+		OpenStreetMapViewOverlayItem openStreetMapViewOverlayItem = new OpenStreetMapViewOverlayItem("Greenwicj", "", greenwich);
+		CampusOSM.getItems().add(openStreetMapViewOverlayItem);
+		
 		for(POI poi : DiscoveryDbAdapter.staticPois)
 		{
-			OpenStreetMapViewOverlayItem openStreetMapViewOverlayItem = new OpenStreetMapViewOverlayItem(poi.getDescription(), "", new GeoPoint(poi.getLat(), poi.getLon()));
-			CampusOSM.getItems().add(openStreetMapViewOverlayItem);
+			OpenStreetMapViewOverlayItem openStreetMapViewOverlayItem2 = new OpenStreetMapViewOverlayItem(poi.getDescription(), "", new GeoPoint(poi.getLat(), poi.getLon()));
+			CampusOSM.getItems().add(openStreetMapViewOverlayItem2);
 		}
 		CampusOSM.getOpenStreetMapView().invalidate();
 	}
