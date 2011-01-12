@@ -13,7 +13,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-
+/**
+ * \brief The NoteActivity.
+ * 
+ * This class is to manage the user notes.
+ * 
+ * @author axel
+ *
+ */
 public class Note extends Activity{
 	
 	/**
