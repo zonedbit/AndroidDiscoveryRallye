@@ -68,6 +68,11 @@ public class CampusOSM extends Activity {
 	}
 	
     @Override
+    /**
+     * \brief
+     * In dieser Lebenszyklusphase der Activity werden die wesentlichen Einstellungen für die Karte getätigt.
+     * Des Weiteren werden aus der Datenbank alle POIs geholt, um sie auf der Karte darzustellen.  
+     */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 

@@ -7,8 +7,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 
-/*
- * Merkwürdigerweise benötigt die OpenStreetMapViewItemizedOverlayWithFocus einen ResourceProxyImpl um an die Icons etc. zu kommen
+/**
+ * \brief
+ * Der OpenStreetMapViewItemizedOverlayWithFocus benötigt einen ResourceProxyImpl um an die Icons etc. zu kommen
  */
 public class ResourceProxyImpl extends DefaultResourceProxyImpl {
 

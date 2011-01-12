@@ -15,6 +15,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+/**
+ * \brief
+ * Mit dieser Klasse wird ein Dialog zur Erstellung eines POIs erzeugt.
+ */
 public class NewPOIDialog extends Dialog {
 
 	private Context context;
@@ -26,6 +30,7 @@ public class NewPOIDialog extends Dialog {
 	private double longitude;
 	
 	/**
+	 * \brief
 	 * Constructor to create the Dialog. This dialog isn't
 	 * modal, such as any Android dialog.
 	 * 
@@ -49,8 +54,9 @@ public class NewPOIDialog extends Dialog {
 		this.poic    = POIContainer.getInstance(context);
 	}
 
-	/* (non-Javadoc)
-	 * @see android.app.Dialog#onCreate(android.os.Bundle)
+	/**
+	 * \brief
+	 * Implementierung der Lebenszyklusphase onCreate für den Dialog
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +83,8 @@ public class NewPOIDialog extends Dialog {
 		
 	}
 
-	/*
+	/**
+	 * \brief
 	 * Implementation of the necessary onClickListener 
 	 */
 	private class OnClickPOIAdd implements android.view.View.OnClickListener{
