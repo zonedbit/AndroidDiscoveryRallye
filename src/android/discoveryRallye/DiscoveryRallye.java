@@ -5,6 +5,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TabHost;
 
+/**
+ * \brief
+ * Diese Klasse repräsentiert den TabHost der App. 
+ * Darin sind drei Tabs (Karte, Liste und Notizblock) enthalten. 
+ */
 public class DiscoveryRallye extends TabActivity {
     /** Called when the activity is first created. */
     @Override

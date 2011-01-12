@@ -58,6 +58,7 @@ public class DiscoveryDbAdapter implements IDBPOI {
 	}
 
 	/**
+	 * \brief
 	 * Default Constructor
 	 * 
 	 * The Android context is necessary to open and close the SQLite database.

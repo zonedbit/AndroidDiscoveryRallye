@@ -21,6 +21,11 @@ import android.view.MenuItem;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
+/**
+ * \brief
+ * Dies ist eine Activity für die Darstellung einer Karte auf Basis von OpenStreetMap.
+ * Die Library, die dabei genutzt wird ist unter http://code.google.com/p/osmdroid/ zu finden.
+ */
 public class CampusOSM extends Activity {
 
 	private static final String TAG = CampusOSM.class.getName();
@@ -99,14 +104,21 @@ public class CampusOSM extends Activity {
 			addRouteOverlay();
         }
     }
-    
+
+    /**
+     * \brief
+     * Methode zum Hinfügen des Routenoverlays
+     */
     private void addRouteOverlay()
     {
 		routeOverlay = new RouteOverlay(geopoints, openStreetMapView, this, Color.YELLOW);
 		openStreetMapView.getOverlays().add(routeOverlay);
     }
     
-    
+    /**
+     * \brief
+     * Methode zum Hinfügen eines Lineals über der Karte
+     */
     private void addScaleBar() {
     	this.scaleBarOverlay = new ScaleBarOverlay(this, mResourceProxy);
     	CampusOSM.openStreetMapView.getOverlays().add(scaleBarOverlay);
@@ -114,6 +126,11 @@ public class CampusOSM extends Activity {
     	this.scaleBarOverlay.setMetric();
 	}
 
+    /**
+     * \brief
+     * Methode zum Hinfügen eines Overlays, dass die eigene Position darstellt. Dabei wird auch 
+     * der Kompass sowie das GPS-Modul aktiviert.
+     */
 	private void addMyLocationOverlay() {
     	
 	        myLocationOverlay = new MyLocationOverlay(this.getBaseContext(), openStreetMapView, mResourceProxy);
@@ -134,6 +151,10 @@ public class CampusOSM extends Activity {
 	}
     
     @Override
+    /**
+     * \brief
+     * Lebenszyklusphase onPause, in der myLocationOverlay und damit das GPS-Modul deaktiviert wird.
+     */
     protected void onPause() {
     	super.onPause();
     	//Batterie sparen
@@ -141,11 +162,19 @@ public class CampusOSM extends Activity {
     }
     
     @Override
+    /**
+     * \brief
+     * Lebenszyklusphase onResume, in der myLocationOverlay und damit das GPS-Modul aktiviert wird.
+     */
     protected void onResume() {
     	super.onResume();
     	myLocationOverlay.enableMyLocation();
     }
     
+    /**
+     * \brief
+     * Mit dieser Methode wird ein Overlay über die Karte gelegt, dass die POIs beinhaltet.
+     */
 	private void addItemizedOverlay() 
     {
 	        this.itemizedOverlay = new OpenStreetMapViewItemizedOverlayWithFocus<OpenStreetMapViewOverlayItem>(this, items, new ItemGestureListener<OpenStreetMapViewOverlayItem>(), mResourceProxy);
@@ -153,19 +182,31 @@ public class CampusOSM extends Activity {
 	        openStreetMapView.getOverlays().add(this.itemizedOverlay);
 	}
     
+	/**
+	 * \brief
+	 * Mit dieser Methode wird der Dialog zur Erstellung eines POIs erzeugt und angezeigt.
+	 * 
+	 * @param latitude
+	 * @param longitude
+	 */
     public void addItem(double latitude, double longitude)
     {
     	NewPOIDialog dlg = new NewPOIDialog(this, latitude, longitude, items, openStreetMapView);
 		dlg.show();
     }
     
+    /**
+     * \brief
+     * Methode zum Hinfügen des Zoom-Buttons
+     */
 	private void setPreferences() 
     {
     	openStreetMapView.setBuiltInZoomControls(true);
 	}
 
-	/*
-     * Hier wird die grafische Oberfläche zusammengebaut. Eine Variante über XML ist mir nicht bekannt.
+	/**
+	 * \brief
+     * Hier wird die grafische Oberfläche zusammengebaut.
      */
     public void createLayout()
     {
@@ -175,6 +216,11 @@ public class CampusOSM extends Activity {
         this.setContentView(relativeLayout);
     }
     
+    /**
+     * \brief
+     * Die Karte wird auf die Position des Benutzers oder, falls diese nicht vorhanden ist, auf den Fachbereich 
+     * Informatik zentriert. Des Weiteren wird eine Zoomstufe von 12 festgelegt.
+     */
     public void setInitialView()
     {
     	openStreetMapView.getController().setZoom(12);
@@ -192,6 +238,11 @@ public class CampusOSM extends Activity {
     }
     
     @Override
+    /**
+     * \brief
+     * Methode zur Erstellung des Option Menüs mit 4 Menüpunkten: Zeige Standort, Speichere aktuelle Location,
+     * Starte Rallye/Nächstes Ziel und neue Route.
+     */
     public boolean onCreateOptionsMenu(Menu menu) 
     {
     	menu.add(0, 1, Menu.FIRST, "Zeige Standort");
@@ -203,6 +254,10 @@ public class CampusOSM extends Activity {
     }
     
     @Override
+    /**
+     * \brief
+     * Methode zur Auswertung der Klicks auf das Options Menü
+     */
     public boolean onMenuItemSelected(int featureId, MenuItem item) 
     {
     	GeoPoint userLocation = myLocationOverlay.getMyLocation();

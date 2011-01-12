@@ -29,7 +29,11 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
-
+/**
+ * \brief
+ * Diese Klasse führt den Request an den YOURS-Webservice aus, verarbeitet die Antwort und in Form von 
+ * GeoPoints zurück.
+ */
 public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoPoint>> {
 
 	//Quelle: http://wiki.openstreetmap.org/wiki/YOURS#Routing_API
@@ -49,13 +53,20 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 	private Activity activity;
 	private POI destination;
 	
+	/**
+	 * \brief
+	 * Konstruktor für die Erstellung des JSONRequests.
+	 */
 	public JSONRequest(Activity activity, POI destination)
 	{
 		this.activity = activity;
 		this.destination = destination;
 	}
 	
-	/*
+	/**
+	 * \brief
+	 * In dieser Methode wird die URL für die Anfrage an den YOURS-Webservice zusammengestellt. Eine Beispiel-
+	 * anfrage sieht folgendermaßen aus:
 	 * http://www.yournavigation.org/api/1.0/gosmore.php?format=geojson&flat=52.215676&flon=5.963946&tlat=52.2573&tlon=6.1799&v=foot&fast=1&layer=mapnik
 	 */
 	private String createURL(POI myLocation, POI destination) 
@@ -98,6 +109,15 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 		return sb.toString();
 	}
 
+	/**
+	 * \brief
+	 * In dieser Methode wird der Inhalt des Antwort ausgelesen, einem StringBuilder hinzugefügt
+	 * und als String zurückgegeben.
+	 * 
+	 * @param entity
+	 * @return
+	 * @throws IOException
+	 */
 	private String getContent(HttpEntity entity) throws IOException {
 		InputStream content = entity.getContent();
 		
@@ -116,6 +136,10 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 	}
 	
 	@Override
+	/**
+     * \brief
+     * Diese Methode wurde vom AsyncTask vererbt und startet den ProgressDialog.
+     */
 	protected void onPreExecute() 
 	{
 		dialog = new ProgressDialog(activity);
@@ -123,6 +147,11 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 		dialog.show();
 	}
 
+	/**
+	 * \brief
+	 * Die Methode wurde vom AsyncTask vererbt und führt die Anfrage an den Webservice aus und
+	 * verarbeitet die Antwort.
+	 */
 	protected ArrayList<GeoPoint> doInBackground(ArrayList<POI>... pois) 
 	{
 		Log.d(JSONRequest.class.getName(), "Abfrage des Webservices startet...");
@@ -187,6 +216,13 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 	}
 	
 	@Override
+	/**
+     * \brief
+     * Nach der Methode onBackground wird onPostExecute ausgeführt. Hier
+     * werden die GeoPoints, die in obBackground aus dem WebService-Antwort geholt wurden
+     * in einen Intent gelegt. Mit diesem Intent wird der TabHost neu gestartet und damit die Karte
+     * neu angezeigt. Des Weiteren wird der ProgressDialog beendet.
+     */
 	protected void onPostExecute(ArrayList<GeoPoint> result) 
 	{
 		if(result.size() > 0)
@@ -255,6 +291,11 @@ public class JSONRequest extends AsyncTask<ArrayList<POI>, Void , ArrayList<GeoP
 	}
 
 	@SuppressWarnings("unchecked")
+	/**
+     * \brief
+     * Diese Methode startet den Thread (also onPreExecute, onBackground und onPostExecute) und führt
+     * holt vorher die Position des Benutzers um sie dem Thread zu übergeben.
+     */
 	public void calculateRoute() {
 		
 		if(destination != null)

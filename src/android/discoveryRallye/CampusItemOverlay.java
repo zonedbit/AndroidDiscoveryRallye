@@ -9,6 +9,10 @@ import org.andnav.osm.views.overlay.OpenStreetMapViewOverlayItem;
 
 import android.content.Context;
 
+/**
+ * \brief
+ * Dieses Overlay beinhaltet die Items bzw. POIs der Karte.
+ */
 public class CampusItemOverlay extends OpenStreetMapViewItemizedOverlayWithFocus<OpenStreetMapViewOverlayItem> {
 
 	public CampusItemOverlay(

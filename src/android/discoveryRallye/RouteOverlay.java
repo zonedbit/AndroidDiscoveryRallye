@@ -15,18 +15,30 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
 
+/**
+ * \brief
+ * Diese Klasse stellt das Routen-Overlay zur Verfügung. 
+ */
 public class RouteOverlay extends OpenStreetMapViewOverlay {
 
 	private ArrayList<GeoPoint> geoPoints;
 	private OpenStreetMapView openStreetMapView = null;
 	private final Activity activity;
 	private final int color;
-	
+
+	/**
+     * \brief
+     * Simpler Setter für das Attribut GeoPoints
+     */
 	public  void setGeoPoints(ArrayList<GeoPoint> geoPoints)
 	{
 		this.geoPoints = geoPoints;
 	}
 
+	/**
+     * \brief
+     * Konstruktor für die Erzeugung des Routenoverlays
+     */
 	public RouteOverlay(ArrayList<GeoPoint> geoPoints, OpenStreetMapView openStreetMapView, Activity activity, int color) 
 	{
 		super(activity);
@@ -37,6 +49,11 @@ public class RouteOverlay extends OpenStreetMapViewOverlay {
 	}
 	
 	@Override
+	/**
+     * \brief
+     * Überschriebene Methode zum Zeichnen der Route. Dabei werden die Koordinaten auf die Displaygröße
+     * umgerechnet. Die Route wird stückweise von Koordinate zu Koordinate gezeichnet.
+     */
 	protected void onDraw(Canvas canvas, OpenStreetMapView openStreetMapView) 
 	{
 		OpenStreetMapViewProjection projection = this.openStreetMapView.getProjection();
@@ -85,6 +102,10 @@ public class RouteOverlay extends OpenStreetMapViewOverlay {
 	}
 
 	@Override
+	/**
+     * \brief
+     * Diese Methode wurd nicht implementiert. Falls die Route gemalt wurde, könnte man hier noch weitere Aktionen durchführen.
+     */
 	protected void onDrawFinished(Canvas arg0, OpenStreetMapView arg1) {
 		// TODO Auto-generated method stub
 		
