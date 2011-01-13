@@ -60,7 +60,7 @@ public class Note extends Activity{
 	 * 
 	 * Retrieve the information from the file
 	 * 
-	 * @se restoreNotes()
+	 * @see restoreNotes()
 	 * @see android.app.Activity#onResume()
 	 */
 	@Override

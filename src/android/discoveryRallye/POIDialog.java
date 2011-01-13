@@ -14,13 +14,40 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+/**
+ * The Dialog to interacting with a POI
+ * 
+ * This class provides the dialog to interacting with
+ * one POI form the POI list view.
+ * 
+ * @author axel
+ *
+ */
 public class POIDialog extends Dialog {
 
+	/** The name of the class; just for debugging */
 	public static final String TAG = POIDialog.class.getName();
+	
+	/** The primary key of the poi */
 	private int    	poiID;
+	/** The parent of this dialog*/
 	private Context context;
+	/** reference to the POI container class*/
 	POIContainer poic;
+	
+	/** Refresh the User Interface
+	 * 
+	 *  To ensure the calling calls implements this interface,
+	 *  so that the view can be refresh
+	 */
 	IUIRefreshable uiPOIList;
+	
+	/**
+	 * Add a route Overlay
+	 * 
+	 * To ensure the calling class has the method to
+	 * add the route overlay to the map
+	 */
 	IOverlayRouteable route;
 	
 	/**
@@ -46,7 +73,12 @@ public class POIDialog extends Dialog {
 		this.route	   = route;
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * Create the Dialog
+	 * 
+	 * Retrieve the name of the POI and setup the
+	 * on click listener for the buttons.
+	 * 
 	 * @see android.app.Dialog#onCreate(android.os.Bundle)
 	 */
 	@Override
@@ -83,7 +115,20 @@ public class POIDialog extends Dialog {
 	/*
 	 * Implementation of all necessary onClickListener 
 	 */
+	
+	/**
+	 * On click listener for the OK button
+	 */
 	private class OnClickPOIRename implements android.view.View.OnClickListener{
+		/**
+		 * Set the new name of the POI.
+		 * 
+		 * The name from the text field is used for the new name, if
+		 * the user has change the name and this name isn't used.
+		 * 
+		 * If the new name used a second POI, the user gets a error messages.
+		 * 
+		 */
 		public void onClick(View v) {
 			
 			// Get the text from the EditText field
@@ -111,7 +156,13 @@ public class POIDialog extends Dialog {
 		}
 	}
 	
+	/**
+	 * On click listener for the Goto button
+	 */
 	private class OnClickPOIGoTo implements android.view.View.OnClickListener{
+		/**
+		 * Call the method addRouteOverlay from the parent class
+		 */
 		public void onClick(View v) {
 			Log.i("DiscoveryRallye","POIDialog::onClickPOIGoTo()");
 			
@@ -123,7 +174,13 @@ public class POIDialog extends Dialog {
 		}
 	}
 	
+	/**
+	 * On click listener for the delete button
+	 */
 	private class OnClickPOIDelete implements android.view.View.OnClickListener{
+		/**
+		 * Remove a POI from the database
+		 */
 		public void onClick(View v) {
 			
 			POI poi = poic.getPOI(poiID);

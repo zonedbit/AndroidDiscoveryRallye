@@ -10,8 +10,12 @@ import java.io.Serializable;
 public class POI implements Serializable {
 	
 	private static final long serialVersionUID = 4759185882642148767L;
+	
+	/** The latitude of a POI*/
 	private double lat;
+	/** The longitude of a POI */
 	private double lon;
+	/** The name of a POI*/
 	private String description;
 	
 	/**

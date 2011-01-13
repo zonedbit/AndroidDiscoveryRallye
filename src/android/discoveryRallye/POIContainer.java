@@ -6,13 +6,38 @@ import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
-
+/**
+ * 
+ * Container class to manage the POI objects.
+ * 
+ * This container manage all POIs. Therefore, its
+ * retrieve the POI data form the DB and create the
+ * POI objects.
+ * 
+ * Removing a POI object form this class, remove the
+ * POI data from the DB as well.
+ * 
+ * @author axel
+ */
 public class POIContainer implements IDBPOI {
 	
 	/* ArrayList is not synchronized */
+	/** A list with all poi objects from the DB */
 	private ArrayList<POI> pois;
+	
+	/** A list with all POI names as strings 
+	 *  
+	 *  Is necessary for the Android ListAdapter 
+	 */
 	private ArrayList<String> poisName;
+	
+	/** Reference to itself */
 	private static POIContainer poiCon;
+	
+	/** Activity context
+	 *
+	 *  Necessary to access the SQLite DB
+	 */
 	private Context ctx;
 	
 	/**

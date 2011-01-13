@@ -21,12 +21,28 @@ import android.widget.TextView;
  */
 public class NewPOIDialog extends Dialog {
 
+	/** The context of the calling activity */
 	private Context context;
+	
+	/** Reference to the POI container class*/
 	POIContainer poic;
+	
+	/** 
+	 * Callback Method
+	 * 
+	 * To ensure the user interface is refreshable
+	 */
 	IUIRefreshable uiPOIList;
+	
 	private ArrayList<OpenStreetMapViewOverlayItem> items;
+	
+	/** The map view*/
 	private OpenStreetMapView openStreetMapView;
+	
+	/** The latitude*/
 	private double latitude;
+	
+	/** The longitude */
 	private double longitude;
 	
 	/**
@@ -38,10 +54,12 @@ public class NewPOIDialog extends Dialog {
 	 * implements the IUIRefreshable interface
 	 * 
 	 * @param context   The Dialog Environment
-	 * @param poi 
-	 * @param openStreetMapView 
+	 * @param poi The POI object
+	 * @param openStreetMapView  The map view
 	 * @param items 
 	 * @param poiID The position index of the POI in the list
+	 * @param latitude The latitude of the POI
+	 * @param longitude The longitude of the POI
 	 * @see IUIRefreshable
 	 */
 	public NewPOIDialog(Context context, double latitude, double longitude, ArrayList<OpenStreetMapViewOverlayItem> items, OpenStreetMapView openStreetMapView){

@@ -12,6 +12,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+/**
+ * The UI class to present a list of POIs.
+ * 
+ * @author axel
+ *
+ */
 public class POIList extends ListActivity implements IUIRefreshable,
 		IOverlayRouteable {
 	private POIContainer poic;
@@ -26,6 +32,11 @@ public class POIList extends ListActivity implements IUIRefreshable,
 		this.uiRefresh();
 	}
 
+	/**
+	 * OnListItemClick listener
+	 * 
+	 * Open the POIDialog, to manipulate a POI object.
+	 */
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		/* Create the custom dialog */
@@ -33,6 +44,9 @@ public class POIList extends ListActivity implements IUIRefreshable,
 		dlg.show();
 	}
 
+	/**
+	 * Add the route overlay to the map and switch to the map tab
+	 */
 	public void addRouteOverlay(POI destination) {
 		// GeoUtils.activateLocationListener(this);
 		JSONRequest jsonRequest = new JSONRequest(this, destination);
@@ -62,12 +76,20 @@ public class POIList extends ListActivity implements IUIRefreshable,
 		CampusOSM.getOpenStreetMapView().invalidate();
 	}
 
+	/**
+	 * The Option menu
+	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, 1, Menu.FIRST, "POIs zurücksetzen");
 		return true;
 	}
 
+	/**
+	 * Option menu item listener
+	 * 
+	 * Reset the database and refresh the user interface
+	 */
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		boolean result = false;
